@@ -28,6 +28,8 @@ def register(): #Adds new user account
              print("Oops password doesn't match! Try again:")
 def login(): #Checks and logs in user
     n=5
+    with open('UserAcc','rb') as file:
+            accounts=pickle.load(file)
     for key in accounts:
         print(key)
     usnchoice=input("Select an account\n")
