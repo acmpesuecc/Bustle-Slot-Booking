@@ -1,15 +1,20 @@
 import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
-accounts={'Master':'mpass'}
+accounts={'Mastere':'mpass'}
 restlist=[]
 clear = lambda: os.system('cls')
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
         pickle.dump(data,file)
+def fileRead(filename):
+    with open(filename,'rb') as file:
+         accounts=pickle.load(file)
+         return accounts
 def register(): #Adds new user account
     usn=input("Enter a username:\n")
     usn=usn.strip()
+    usn=usn+'e'
     if usn in accounts:
         print("Account already exists!")
     else:
@@ -26,33 +31,63 @@ def register(): #Adds new user account
          else:
              print("Oops password doesn't match! Try again:")
 def master():
-    mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider")
-    mastchoice2=input("Which service would you like to edit?\n1)Restaurant")
-    if mastchoice1==1:
+    mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage User Accounts\n")
+    #mastchoice2=input("Which service would you like to edit?\n1)Restaurant")
+    if mastchoice1=='1':
+        print("LOLZ finish this part man")
         #START HERE
-        fileWrite(mastchoice2,)
-    #elif mastchoice1==2:
+        #fileWrite(mastchoice2)
+    #elif mastchoice1=='2':
+    elif mastchoice1=='3':
+        accounts=fileRead("UserAcc")
+        print(accounts)
+        for key in accounts:
+            if key != "Mastere":
+                print(key)
+        edchoice=input("Which user would you like to manage?\n")
+        if edchoice[-1]=='e':
+            yn=input("Would you like to disable this account? (y/n)")
+            if yn=='y':
+                accounts[edchoice[0:-1]+'d']=accounts[edchoice]
+                del accounts[edchoice]
+                fileWrite('UserAcc',accounts)
+        else:
+            yn=input("Would you like to enable this account? (y/n)")
+            if yn=='y':
+                 accounts[edchoice[0:-1]+'e']=accounts[edchoice]
+                 del accounts[edchoice]
+                 fileWrite('UserAcc',accounts)
         
 def login(): #Checks and logs in user
     n=5
-    with open('UserAcc','rb') as file:
-            accounts=pickle.load(file)
+    accounts=fileRead("UserAcc")
+    print(accounts)
+    bool='e'
     for key in accounts:
-        print(key)
+        if key[-1]=='e':
+            print(key[0:-1])
+            print(key)
+            bool='e'
+        elif key[-1]=='d':
+            print(key[0:-1],"(disabled)")
+            print(key)
+            bool='d'
     usnchoice=input("Select an account\n")
-    if usnchoice=="Master":
+    usnchoice=usnchoice+bool
+    print(usnchoice)
+    if usnchoice=="Mastere":
         loginpass=input("Enter your password\n")
         if loginpass==accounts[usnchoice]:
             master()
-    elif usnchoice in accounts:
+    elif usnchoice in accounts and bool=='e':
         while n>=0:
             loginpass=input("Enter your password\n")
             if loginpass==accounts[usnchoice]:
                 clear()
-                print("Welcome ",usnchoice,"!\nLoading");time.sleep(0.5);clear()
-                print("Welcome ",usnchoice,"!\nLoading.");time.sleep(0.5);clear()
-                print("Welcome ",usnchoice,"!\nLoading..");time.sleep(0.5);clear()
-                print("Welcome ",usnchoice,"!\nLoading...");time.sleep(0.5);clear()
+                print("Welcome ",usnchoice[0:-1],"!\nLoading");time.sleep(0.5);clear()
+                print("Welcome ",usnchoice[0:-1],"!\nLoading.");time.sleep(0.5);clear()
+                print("Welcome ",usnchoice[0:-1],"!\nLoading..");time.sleep(0.5);clear()
+                print("Welcome ",usnchoice[0:-1],"!\nLoading...");time.sleep(0.5);clear()
                 return True
             else:
                 n=n-1
@@ -60,7 +95,13 @@ def login(): #Checks and logs in user
                     print("Incorrect Password. Try again!\nYou have ",n," tries remaining:")
                 else:
                     print("Too many failed attempts. You will now be redirected to the login page")
-                    return  False
+                    accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
+                    del accounts[usnchoice]
+                    fileWrite('UserAcc',accounts)
+                    return  False   
+    elif usnchoice in accounts and bool=='d':
+        print("This account is disabled. Kindly contact the admin to re-enable your account")
+        return False
     else:
         print("This user doesn't exist!")
         login()
@@ -109,12 +150,11 @@ while True:
         time.sleep(3)
         clear()
     elif loginno=='disp': #Dev Command
-        with open('UserAcc','rb') as file:
-            print(pickle.load(file))
-    elif loginno=='forceclear': #Dev Command
-        accounts={'Master':'mpass'}
+        accounts=fileRead('UserAcc')
+        print(accounts)
+    elif loginno=='fclr': #Dev Command
         with open('UserAcc','wb') as file:
-         pickle.dump(accounts,file)
+            pickle.dump(accounts,file)
     else:
         print("Invalid Input")
         time.sleep(3)
