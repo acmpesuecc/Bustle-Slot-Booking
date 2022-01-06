@@ -29,7 +29,7 @@ def register(): #Adds new user account
              break
          else:
              print("Oops password doesn't match! Try again:")
-def master():
+def admin():
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage User Accounts\n4)Logout\n")
     if mastchoice1=='1':
         mastchoice2=input("Which service would you like to edit?\n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n")#Add other services here
@@ -62,7 +62,7 @@ def master():
                     print("Incorrect number of inputs received")
                     time.sleep(3)
                     clear()
-                    master()
+                    admin()
                 if npname in service:
                     print("Entry already exists!")
                     time.sleep(3)
@@ -73,7 +73,7 @@ def master():
             clear()
             print("Provider successfully added!")
             time.sleep(3)
-            master()
+            admin()
         elif mastchoice2=='4' or mastchoice2=='5':
             if mastchoice2=='4':
                 tempname="spa"
@@ -100,11 +100,11 @@ def master():
                     print("Incorrect number of inputs received")
                     time.sleep(3)
                     clear()
-                    master()
+                    admin()
                 if npname in service:
                     ynchoice=input("Entry already exists! Do you want to add another provider?(y/n)\n")
                     if ynchoice=='n':
-                        master()
+                        admin()
                 else:
                     service.update({npname:[npexp,nptype]})
                     break
@@ -115,12 +115,12 @@ def master():
             print(t)
             input()
             time.sleep(3)
-            master()    
+            admin()    
     elif mastchoice1=='3':
         accounts = fileRead("UserAcc")
         print("Which account do you wish to manage?")
         for key in accounts:
-            if key != "Mastere":
+            if key != "admine":
                 print(key)  
         edchoice = input()
         if edchoice in accounts and edchoice[-1] == 'e':
@@ -138,7 +138,7 @@ def master():
         else:
             print("Account doesnt exist! Try again!")
             time.sleep(3)
-            master()
+            admin()
         fileWrite("UserAcc",accounts)
     elif mastchoice1=='4':
         clear()
@@ -164,10 +164,10 @@ def login(): #Checks and logs in user
         elif key.startswith(usnchoice) and key[-1]=='d':
             usnchoice = usnchoice + key[-1]
             bool=False
-    if usnchoice=="Mastere":
+    if usnchoice=="admine":
         loginpass=input("Enter your password\n")
         if loginpass==accounts[usnchoice]:
-            master()
+            admin()
     elif usnchoice in accounts and bool==True:
         while n>=0:
             loginpass=input("Enter your password\n")
@@ -227,7 +227,7 @@ def home():#Home page
 try: #Starts Execution here
     fileRead("UserAcc")
 except:
-    fileWrite("UserAcc",{'Mastere':'mpass'})
+    fileWrite("UserAcc",{'admine':'mpass'})
 while True:
     loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
     if loginno=='1':
@@ -248,7 +248,7 @@ while True:
         with open('UserAcc','wb') as file:
             pickle.dump(accounts,file)
     elif loginno=='m':#TEMPORARY
-        master()
+        admin()
     else:
         print("Invalid Input")
         time.sleep(3)
