@@ -44,19 +44,19 @@ def master():
         for key in accounts:
             if key != "Mastere":
                 print(key)
-        choice = input()
-        if choice[-1] == 'e':
-            print(f"Do you wish to disable {choice}(y/n)?")
-            check = input()
-            if check == 'y':
-                accounts[choice[0:-1]+'d'] = accounts[choice]
-                del accounts[choice]
-        elif choice[-1] == 'd':
-            print(f"Do you wish to enable {choice}?(y/n)")
-            check = input()
-            if check == 'y':
-                accounts[choice[0:-1]+'e'] = accounts[choice]
-                del accounts[choice]
+        edchoice = input()
+        if edchoice[-1] == 'e':
+            print(f"Do you wish to disable {edchoice}(y/n)?")
+            yncheck = input()
+            if yncheck == 'y':
+                accounts[edchoice[0:-1]+'d'] = accounts[edchoice]
+                del accounts[edchoice]
+        elif edchoice[-1] == 'd':
+            print(f"Do you wish to enable {edchoice}?(y/n)")
+            yncheck = input()
+            if yncheck == 'y':
+                accounts[edchoice[0:-1]+'e'] = accounts[edchoice]
+                del accounts[edchoice]
         fileWrite("UserAcc",accounts)
 def login(): #Checks and logs in user
     n=5
