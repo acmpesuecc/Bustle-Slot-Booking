@@ -39,25 +39,25 @@ def master():
         #fileWrite(mastchoice2)
     #elif mastchoice1=='2':
     elif mastchoice1=='3':
-        accounts=fileRead("UserAcc")
-        print(accounts)
+        accounts = fileRead("UserAcc")
+        print("Which account do you wish to manage?")
         for key in accounts:
             if key != "Mastere":
                 print(key)
-        edchoice=input("Which user would you like to manage?\n")
-        if edchoice[-1]=='e':
-            yn=input("Would you like to disable this account? (y/n)")
-            if yn=='y':
-                accounts[edchoice[0:-1]+'d']=accounts[edchoice]
-                del accounts[edchoice]
-                fileWrite('UserAcc',accounts)
-        else:
-            yn=input("Would you like to enable this account? (y/n)")
-            if yn=='y':
-                 accounts[edchoice[0:-1]+'e']=accounts[edchoice]
-                 del accounts[edchoice]
-                 fileWrite('UserAcc',accounts)
-        
+        choice = input()
+        if choice[-1] == 'e':
+            print(f"Do you wish to disable {choice}(y/n)?")
+            check = input()
+            if check == 'y':
+                accounts[choice[0:-1]+'d'] = accounts[choice]
+                del accounts[choice]
+        elif choice[-1] == 'd':
+            print(f"Do you wish to enable {choice}?(y/n)")
+            check = input()
+            if check == 'y':
+                accounts[choice[0:-1]+'e'] = accounts[choice]
+                del accounts[choice]
+        fileWrite("UserAcc",accounts)
 def login(): #Checks and logs in user
     n=5
     accounts=fileRead("UserAcc")
@@ -67,13 +67,13 @@ def login(): #Checks and logs in user
         if key[-1]=='e':
             print(key[0:-1])
             print(key)
-            bool='e'
         elif key[-1]=='d':
             print(key[0:-1],"(disabled)")
             print(key)
-            bool='d'
     usnchoice=input("Select an account\n")
-    usnchoice=usnchoice+bool
+    for key in accounts:
+        if key.startswith(usnchoice):
+            usnchoice = usnchoice + key[-1]
     print(usnchoice)
     if usnchoice=="Mastere":
         loginpass=input("Enter your password\n")
