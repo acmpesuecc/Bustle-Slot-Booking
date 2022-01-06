@@ -34,6 +34,7 @@ def master():
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage User Accounts\n")
     #mastchoice2=input("Which service would you like to edit?\n1)Restaurant")
     if mastchoice1=='1':
+        mastchoice2=input("Which service would you like to edit?\n1)Restaurant")#Add other services here
         print("LOLZ finish this part man")
         #START HERE
         #fileWrite(mastchoice2)
@@ -45,41 +46,45 @@ def master():
             if key != "Mastere":
                 print(key)
         edchoice = input()
-        if edchoice[-1] == 'e':
+        if edchoice in accounts and edchoice[-1] == 'e':
             print(f"Do you wish to disable {edchoice}(y/n)?")
             yncheck = input()
             if yncheck == 'y':
                 accounts[edchoice[0:-1]+'d'] = accounts[edchoice]
                 del accounts[edchoice]
-        elif edchoice[-1] == 'd':
+        elif edchoice in accounts and edchoice[-1] == 'd':
             print(f"Do you wish to enable {edchoice}?(y/n)")
             yncheck = input()
             if yncheck == 'y':
                 accounts[edchoice[0:-1]+'e'] = accounts[edchoice]
                 del accounts[edchoice]
+        else:
+            print("Account doesnt exist! Try again!")
+            time.sleep(3)
+            master()
         fileWrite("UserAcc",accounts)
 def login(): #Checks and logs in user
     n=5
     accounts=fileRead("UserAcc")
-    print(accounts)
-    bool='e'
+    bool=True
     for key in accounts:
         if key[-1]=='e':
             print(key[0:-1])
-            print(key)
         elif key[-1]=='d':
             print(key[0:-1],"(disabled)")
-            print(key)
     usnchoice=input("Select an account\n")
     for key in accounts:
-        if key.startswith(usnchoice):
+        if key.startswith(usnchoice) and key[-1]=='e':
             usnchoice = usnchoice + key[-1]
-    print(usnchoice)
+            bool=True
+        elif key.startswith(usnchoice) and key[-1]=='d':
+            usnchoice = usnchoice + key[-1]
+            bool=False
     if usnchoice=="Mastere":
         loginpass=input("Enter your password\n")
         if loginpass==accounts[usnchoice]:
             master()
-    elif usnchoice in accounts and bool=='e':
+    elif usnchoice in accounts and bool==True:
         while n>=0:
             loginpass=input("Enter your password\n")
             if loginpass==accounts[usnchoice]:
@@ -99,7 +104,7 @@ def login(): #Checks and logs in user
                     del accounts[usnchoice]
                     fileWrite('UserAcc',accounts)
                     return  False   
-    elif usnchoice in accounts and bool=='d':
+    elif usnchoice in accounts and bool==False:
         print("This account is disabled. Kindly contact the admin to re-enable your account")
         return False
     else:
