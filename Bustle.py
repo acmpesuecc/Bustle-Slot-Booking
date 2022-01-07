@@ -1,6 +1,7 @@
 import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
+import stdiomask #used to accept password without showing characters
 clear = lambda: os.system('cls')
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
@@ -9,7 +10,7 @@ def fileRead(filename):
     with open(filename,'rb') as file:
          data=pickle.load(file)
          return data
-def register(): #Adds new user account
+def register(): #Adds new user account  
     usn=input("Enter a username:\n")
     usn=usn.strip()
     usn=usn+'e'
@@ -174,7 +175,7 @@ def admin():
                     continue'''
             dpname=input("Which provider would you like to delete?\n")
             if dpname in service:
-                loginpass=input("Enter admin password to confirm:\n")
+                loginpass=stdiomask.getpass("Enter admin password to confirm:\n")
                 if loginpass==adminpass:
                     del service[dpname]
                     fileWrite(tempname,service)
@@ -240,12 +241,21 @@ def login(): #Checks and logs in user
             usnchoice = usnchoice + key[-1]
             bool=False
     if usnchoice=="admine":
-        loginpass=input("Enter your password\n")
+        loginpass=stdiomask.getpass("Enter your password\n")
         if loginpass==accounts[usnchoice]:
             admin()
+        else:
+            if n!=0:
+                print("Incorrect Password. Try again!\nYou have ",n," tries remaining:")
+            else:
+                print("Too many failed attempts. You will now be redirected to the login page")
+                accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
+                del accounts[usnchoice]
+                fileWrite('UserAcc',accounts)
+                return  False    
     elif usnchoice in accounts and bool==True:
         while n>=0:
-            loginpass=input("Enter your password\n")
+            loginpass=stdiomask.getpass("Enter your password\n")
             if loginpass==accounts[usnchoice]:
                 clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading");time.sleep(0.5);clear()
