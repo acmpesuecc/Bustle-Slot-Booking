@@ -30,9 +30,12 @@ def register(): #Adds new user account
          else:
              print("Oops password doesn't match! Try again:")
 def admin():
+    adminpass=fileRead("UserAcc")
+    adminpass=adminpass["admine"]
+    clear()
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage User Accounts\n4)Logout\n")
     if mastchoice1=='1':
-        mastchoice2=input("Which service would you like to edit?\n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n")#Add other services here
+        mastchoice2=input("Choose a category to add to: \n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n")#Add other services here
         if mastchoice2=='1' or mastchoice2=='2' or mastchoice2=='3':
             if mastchoice2=='1':
                 tempname="restaurant"
@@ -111,11 +114,79 @@ def admin():
             fileWrite(tempname,service)
             clear()
             print("Provider successfully added!")
-            t=fileRead(tempname)
-            print(t)
-            input()
             time.sleep(3)
-            admin()    
+            admin()
+        elif mastchoice2=='6':
+            clear()
+            admin()
+        else:
+            print("Invalid input! Reinitializing page...")
+            time.sleep(3)
+            clear()
+            admin()
+    elif mastchoice1=='2':
+        while True:
+            mastchoice2=input("Choose a category to delete from:\n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n6)Back\n")#Add other services here
+            if mastchoice2=='1':
+                tempname="restaurant"
+            elif mastchoice2=='2':
+                tempname="hotel"
+            elif mastchoice2=='3':
+                tempname="bus"
+            elif mastchoice2=='4':
+                tempname="spa"
+            elif mastchoice2=='5':
+                tempname="cycle"
+            elif mastchoice2=='6':
+                admin()
+            else:
+                print("Invalid input! Reinitializing page..")
+                time.sleep(2)
+                clear()
+                continue
+            try:
+                service=fileRead(tempname)
+                if service:
+                    for key in service:
+                     print(key)
+                else:
+                    ynchoice=input("No providers available for this category yet. Would you like to add a provder instead?(y/n)\n")
+                    if ynchoice=='y':
+                        clear()
+                        admin()
+                    elif ynchoice=='n':
+                        continue
+            except:
+                ynchoice=input("No entries in this category available! Do you want to browse another category instead?(y/n)\n")
+                if ynchoice=='n':
+                    admin()
+                elif ynchoice=='y':#check if really necessary
+                    continue
+            '''if service:
+                for key in service:
+                    print(key)
+            else:
+                ynchoice=("No providers available for this category yet. Would you like to add a provder instead?(y/n)\n")
+                if ynchoice=='y':
+                    clear()
+                    admin() 
+                elif ynchoice=='n':
+                    continue'''
+            dpname=input("Which provider would you like to delete?\n")
+            if dpname in service:
+                loginpass=input("Enter admin password to confirm:\n")
+                if loginpass==adminpass:
+                    del service[dpname]
+                    fileWrite(tempname,service)
+                    print("Provider Deleted!\n")
+                else:
+                 print("Incorrect password. Provider deleletion failed")
+                time.sleep(3)
+                clear()
+            else:
+                print("Provider doesn't exist! Provider deleletion failed")
+                time.sleep(3)
+                clear()
     elif mastchoice1=='3':
         accounts = fileRead("UserAcc")
         print("Which account do you wish to manage?")
@@ -147,6 +218,10 @@ def admin():
         print("Logging out..");time.sleep(0.5);clear()
         print("Logging out...");time.sleep(0.5);clear()
         login()
+    else:
+        print("Invalid Input! Reinitializing page...")
+        time.sleep(3)
+        admin()
 def login(): #Checks and logs in user
     n=5
     accounts=fileRead("UserAcc")
