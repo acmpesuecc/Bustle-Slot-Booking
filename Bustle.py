@@ -2,6 +2,9 @@ import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
+#import pygame
+#from subprocess import *
+#from snake import main
 clear = lambda: os.system('cls')
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
@@ -10,6 +13,13 @@ def fileRead(filename):
     with open(filename,'rb') as file:
          data=pickle.load(file)
          return data
+def logout():
+    clear()
+    print("Logging out");time.sleep(0.5);clear()
+    print("Logging out.");time.sleep(0.5);clear()
+    print("Logging out..");time.sleep(0.5);clear()
+    print("Logging out...");time.sleep(0.5);clear()
+    login()
 def register(): #Adds new user account  
     usn=input("Enter a username:\n")
     usn=usn.strip()
@@ -213,16 +223,17 @@ def admin():
             admin()
         fileWrite("UserAcc",accounts)
     elif mastchoice1=='4':
-        clear()
-        print("Logging out");time.sleep(0.5);clear()
-        print("Logging out.");time.sleep(0.5);clear()
-        print("Logging out..");time.sleep(0.5);clear()
-        print("Logging out...");time.sleep(0.5);clear()
-        login()
+        logout()
     else:
         print("Invalid Input! Reinitializing page...")
         time.sleep(3)
         admin()
+def games():
+    print("Which game would you like to play?\n")
+    gchoice=input("1)Bustle Snake!\nComing Soon...\n")
+    if gchoice =='1':
+        exec(open("snake.py").read())
+
 def login(): #Checks and logs in user
     n=5
     accounts=fileRead("UserAcc")
@@ -298,7 +309,7 @@ def booking():#Shows available services
         clear()
         booking()'''
 def home():#Home page
-    homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n")
+    homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n6)Logout\n")
     if homechoice=='1':
         print("bookings page here")
     elif homechoice=='2':
@@ -306,9 +317,11 @@ def home():#Home page
     elif homechoice=='3':
         print("Voucher page here")
     elif homechoice=='4':
-        print("Games page here")
+        games()
     elif homechoice=='5':
         print("Settings page here")
+    elif homechoice=='6':
+        logout()
     else:
         print("Invalid Input")
         time.sleep(2)
@@ -324,7 +337,7 @@ def menu():
         if loginno=='1':
             bool=login()
             if bool==True:
-                break
+                home()
             else:
                 time.sleep(3)
                 clear()
@@ -345,4 +358,3 @@ def menu():
             time.sleep(3)
             clear()
 menu()#Starts Execution here
-home()
