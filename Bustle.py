@@ -232,7 +232,7 @@ def login(): #Checks and logs in user
             print(key[0:-1])
         elif key[-1]=='d':
             print(key[0:-1],"(disabled)")
-    usnchoice=input("Select an account\n")
+    usnchoice=input("Select an account (Enter 'c' to go back)\n")
     for key in accounts:
         if key.startswith(usnchoice) and key[-1]=='e':
             usnchoice = usnchoice + key[-1]
@@ -276,6 +276,9 @@ def login(): #Checks and logs in user
     elif usnchoice in accounts and bool==False:
         print("This account is disabled. Kindly contact the admin to re-enable your account")
         return False
+    elif usnchoice=='c':
+        clear()
+        menu()
     else:
         print("This user doesn't exist!")
         login()
@@ -295,47 +298,51 @@ def booking():#Shows available services
         clear()
         booking()'''
 def home():#Home page
-    homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Settings\n")
-    if homechoice==1:
+    homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n")
+    if homechoice=='1':
         print("bookings page here")
-    elif homechoice==2:
+    elif homechoice=='2':
         print("History page here")
-    elif homechoice==3:
+    elif homechoice=='3':
         print("Voucher page here")
-    elif homechoice==4:
+    elif homechoice=='4':
+        print("Games page here")
+    elif homechoice=='5':
         print("Settings page here")
     else:
         print("Invalid Input")
         time.sleep(2)
         clear()
         home()
-try: #Starts Execution here
-    fileRead("UserAcc")
-except:
-    fileWrite("UserAcc",{'admine':'mpass'})
-while True:
-    loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
-    if loginno=='1':
-        bool=login()
-        if bool==True:
-            break
-        else:
+def menu():
+    try: 
+        fileRead("UserAcc")
+    except:
+        fileWrite("UserAcc",{'admine':'mpass'})
+    while True:
+        loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
+        if loginno=='1':
+            bool=login()
+            if bool==True:
+                break
+            else:
+                time.sleep(3)
+                clear()
+        elif loginno=='2':
+            register()
             time.sleep(3)
             clear()
-    elif loginno=='2':
-        register()
-        time.sleep(3)
-        clear()
-    elif loginno=='disp': #Dev Command
-        accounts=fileRead('UserAcc')
-        print(accounts)
-    elif loginno=='fclr': #Dev Command
-        with open('UserAcc','wb') as file:
-            pickle.dump(accounts,file)
-    elif loginno=='m':#TEMPORARY
-        admin()
-    else:
-        print("Invalid Input")
-        time.sleep(3)
-        clear()
+        elif loginno=='disp': #Dev Command
+            accounts=fileRead('UserAcc')
+            print(accounts)
+        elif loginno=='fclr': #Dev Command
+            with open('UserAcc','wb') as file:
+                pickle.dump(accounts,file)
+        elif loginno=='m':#TEMPORARY
+            admin()
+        else:
+            print("Invalid Input")
+            time.sleep(3)
+            clear()
+menu()#Starts Execution here
 home()
