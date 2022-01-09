@@ -2,9 +2,6 @@ import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
-#import pygame
-#from subprocess import *
-#from snake import main
 clear = lambda: os.system('cls')
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
@@ -230,11 +227,17 @@ def admin():
         admin()
 def games():
     print("Which game would you like to play?\n")
-    gchoice=input("1)Bustle Snake!\nComing Soon...\n")
+    gchoice=input("1)Snake!\n2)Sudoku(Coming Soon...)\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
     if gchoice =='1':
         exec(open("snake.py").read())
-
+    elif gchoice =='2':
+        exec(open("").read())
+    elif gchoice =='3':
+        exec(open("").read())
+    elif gchoice=='4':
+        home()
 def login(): #Checks and logs in user
+    clear()
     n=5
     accounts=fileRead("UserAcc")
     bool=True
@@ -273,7 +276,7 @@ def login(): #Checks and logs in user
                 print("Welcome ",usnchoice[0:-1],"!\nLoading.");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading..");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading...");time.sleep(0.5);clear()
-                return True
+                home()
             else:
                 n=n-1
                 if n!=0:
@@ -291,7 +294,9 @@ def login(): #Checks and logs in user
         clear()
         menu()
     else:
+        clear()
         print("This user doesn't exist!")
+        time.sleep(3)
         login()
 '''#def hotres():
     
@@ -309,6 +314,7 @@ def booking():#Shows available services
         clear()
         booking()'''
 def home():#Home page
+    clear()
     homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n6)Logout\n")
     if homechoice=='1':
         print("bookings page here")
@@ -325,7 +331,6 @@ def home():#Home page
     else:
         print("Invalid Input")
         time.sleep(2)
-        clear()
         home()
 def menu():
     try: 
@@ -335,12 +340,7 @@ def menu():
     while True:
         loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
         if loginno=='1':
-            bool=login()
-            if bool==True:
-                home()
-            else:
-                time.sleep(3)
-                clear()
+            login()
         elif loginno=='2':
             register()
             time.sleep(3)
