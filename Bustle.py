@@ -17,26 +17,31 @@ def logout():
     print("Logging out..");time.sleep(0.5);clear()
     print("Logging out...");time.sleep(0.5);clear()
     login()
+def setpass(usnID,score):
+    accounts=fileRead("UserAcc")
+    pass1=input("Enter a password:\n")
+    pass1=pass1.strip()
+    while True:
+        pass2=input("Confirm password:\n")
+        if pass2==pass1:
+            sq=input("Enter your Security Question:\n")
+            sa=input("Enter the answer for your Security Question:\nWARNING: Give and answer you can remember. You will need these in case you have to reset your account password!\n")
+            accounts.update({usnID:[pass1,score,sq,sa]})
+            fileWrite('UserAcc',accounts)
+            return 
+        else:
+            print("Oops password doesn't match! Try again:")
 def register(): #Adds new user account  
-    usn=input("Enter a username:\n")
+    usn=input("Enter a username:\n")    
     usn=usn.strip()
     usn=usn+'e'
     accounts=fileRead("UserAcc")
     if usn in accounts:
         print("Account already exists!")
     else:
-        pass1=input("Enter a password:\n")
-        pass1=pass1.strip()
-        while True:
-         pass2=input("Confirm password:\n")
-         pass2=pass2.strip()
-         if pass2==pass1:
-             accounts.update({usn:pass1})
-             fileWrite('UserAcc',accounts)
-             print('User account successfully created! You will now be redirected to the login page')
-             break
-         else:
-             print("Oops password doesn't match! Try again:")
+        setpass(usn,0)
+        input()
+        print('User account successfully created! You will now be redirected to the login page')
 def admin():
     adminpass=fileRead("UserAcc")
     adminpass=adminpass["admine"]
@@ -170,7 +175,7 @@ def admin():
                     admin()
                 elif ynchoice=='y':#check if really necessary
                     continue
-            '''if service:
+            '''if service:  
                 for key in service:
                     print(key)
             else:
@@ -236,6 +241,7 @@ def games():
         exec(open("").read())
     elif gchoice=='4':
         home()
+    home()
 def login(): #Checks and logs in user
     clear()
     n=5
@@ -260,7 +266,7 @@ def login(): #Checks and logs in user
             admin()
         else:
             if n!=0:
-                print("Incorrect Password. Try again!\nYou have ",n," tries remaining:")
+                print("Incorrect Password.\nTry again!\nYou have ",n," tries remaining:\n")
             else:
                 print("Too many failed attempts. You will now be redirected to the login page")
                 accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
@@ -270,17 +276,24 @@ def login(): #Checks and logs in user
     elif usnchoice in accounts and bool==True:
         while n>=0:
             loginpass=stdiomask.getpass("Enter your password\n")
-            if loginpass==accounts[usnchoice]:
+            if loginpass==accounts[usnchoice][0]:
                 clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading.");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading..");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading...");time.sleep(0.5);clear()
                 home()
+            elif loginpass=='F':
+                fpans=input(accounts[usnchoice][2])
+                if fpans== accounts[usnchoice][3]:
+                    print("Enter New Password(Make sure to remember this one!)\nNote:You will be required to enter new Security credentials\n")
+                    score=accounts[usnchoice][1]
+                    setpass(usnchoice,score)
+                    login()
             else:
-                n=n-1
+                n=n-1   
                 if n!=0:
-                    print("Incorrect Password. Try again!\nYou have ",n," tries remaining:")
+                    print("Incorrect Password.\nForgot Password? Press F (to pay respects)\nTry again!\nYou have ",n," tries remaining:")
                 else:
                     print("Too many failed attempts. You will now be redirected to the login page")
                     accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
@@ -298,21 +311,6 @@ def login(): #Checks and logs in user
         print("This user doesn't exist!")
         time.sleep(3)
         login()
-'''#def hotres():
-    
-def booking():#Shows available services
-    bookchoice=input("Choose a service:\n1)Hotel Bookings\n2)Restaurant Bookings\n3)Home Spa\n4)Bike Repair\n5)Tickets\n")
-    if bookchoice==1 or bookchoice==2:
-        hotres()     
-    elif bookchoice==3:
-       # print("Voucher page here")
-    elif bookchoice==4:
-        #print("Settings page here")
-    else:
-        print("Invalid Input")
-        time.sleep(2)
-        clear()
-        booking()'''
 def home():#Home page
     clear()
     homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n6)Logout\n")
