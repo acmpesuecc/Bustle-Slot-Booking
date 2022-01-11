@@ -449,9 +449,7 @@ def Restaurant(): #Choosing Restaurants
                                     fileWrite(rchoice,booking)
                                     time.sleep(3)
                                     clear()
-                                    Bill(rchoice,price)
                                     BookingHist(rchoice)
-                                    time.sleep(5)
                                     home()
                                 else:
                                     print("Payment Failed!")
@@ -510,11 +508,6 @@ def checkout(): #Checkout page
                 print("Invalid Credit Card number!")
                 time.sleep(3)
                 clear()
-def Bill(name,price): #Rudimentary Bill page
-    clear()
-    print("\tBill")
-    print(name)
-    print(f"Total amount: Rs.{price}")
 def BookingHist(a):
     global user
     try:
