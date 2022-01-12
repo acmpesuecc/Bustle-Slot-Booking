@@ -1,3 +1,4 @@
+gamscore=0
 def main():
     import pygame
     import os
@@ -145,6 +146,7 @@ def main():
             
             print('Final Score is:', score)
             pygame.quit()
-            return score
-            
-main()
+            return score           
+gamscore=str(main())
+with open("tempscore","w") as file:
+    file.write(str(gamscore))

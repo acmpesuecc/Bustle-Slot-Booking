@@ -41,7 +41,6 @@ def register(): #Adds new user account
         print("Account already exists!")
     else:
         setpass(usn,0)
-        input()
         print('User account successfully created! You will now be redirected to the login page')
 def admin():
     adminpass=fileRead("UserAcc")
@@ -232,10 +231,18 @@ def admin():
         time.sleep(3)
         admin()
 def games():
+    accounts=fileRead("UserAcc")
     print("Which game would you like to play?\n")
     gchoice=input("1)Snake!\n2)Sudoku(Coming Soon...)\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
     if gchoice =='1':
         exec(open("snake.py").read())
+        with open("tempscore","r") as file:
+            score=int(file.read())
+        os.remove("tempscore")
+        if score>10:
+            accounts[user+'e'][1]+=int((score-10)/2)
+        fileWrite("UserAcc",accounts)
+        time.sleep(2)
     elif gchoice =='2':
         exec(open("").read())
     elif gchoice =='3':
@@ -355,8 +362,8 @@ def menu():
             accounts=fileRead('UserAcc')
             print(accounts)
         elif loginno=='fclr': #Dev Command
-            with open('UserAcc','wb') as file:
-                pickle.dump(accounts,file)
+            os.remove("UserAcc")
+            fileWrite("UserAcc",{'admine':'mpass'})
         elif loginno=='m':#TEMPORARY
             admin()
         else:
