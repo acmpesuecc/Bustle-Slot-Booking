@@ -392,7 +392,7 @@ def Restaurant(): #Choosing Restaurants
         clear()
         print("Error 404: Page not found")
         time.sleep(3)
-        home()
+        Booking()
     name = "Restaurant"
     clear()
     slots = fileRead("restaurant")
@@ -441,13 +441,13 @@ def Restaurant(): #Choosing Restaurants
                 print(f"No. of tables available in time slot {tname}: {avail}")
                 nchoice = input("\nHow many persons would you like to book for?\n")
                 if nchoice.isdigit():   
-                    if (avail - int(nchoice)) > 0:
-                        if int(nchoice) > 4 and int(nchoice)%4 != 0:
-                            no = 1 + (int(nchoice)//4)
-                        elif int(nchoice)%4 == 0:
-                            no = int(nchoice)//4
-                        else:
+                    if int(nchoice) > 4 and int(nchoice)%4 != 0:
+                        no = 1 + (int(nchoice)//4)
+                    elif int(nchoice)%4 == 0:
+                         no = int(nchoice)//4
+                    else:
                             no = 1
+                    if (avail - no) >= 0:
                         price = int(booking[tname][1])*no
                         print("No. of tables:",no)
                         print("Total price:",price)
@@ -482,7 +482,7 @@ def Restaurant(): #Choosing Restaurants
                         elif ychoice == 'n':
                             clear()
                     else:
-                        print(f"\nSorry! {nchoice} number of seats unavailable in time slot {tname}")
+                        print(f"\nSorry! {no} number of tables unavailable in time slot {tname}")
                         time.sleep(3)
                         clear()
                 elif nchoice == 'c':
@@ -506,12 +506,12 @@ def Restaurant(): #Choosing Restaurants
 def Hotel():
     from datetime import datetime
     try:
-        fileRead("restaurant")
+        fileRead("hotel")
     except:
         clear()
         print("Error 404: Page not found")
         time.sleep(3)
-        home()
+        Booking()
     name = 'Hotel'
     clear()
     slots = fileRead("hotel")
@@ -537,7 +537,7 @@ def Hotel():
                 while True:
                     nchoice = input("How many rooms would you like to book?\n(Press 'c' to go back)\n")
                     if nchoice.isdigit():
-                        if (avail-int(nchoice)) > 0:
+                        if (avail-int(nchoice)) >= 0:
                             price = int(booking[1])*int(nchoice)
                             clear()
                             print(f"No. of rooms to be booked: {nchoice}")
@@ -609,6 +609,8 @@ def checkout(): #Checkout page
             while True:
                 dcn = input("Enter Debit Card number:")
                 if len(dcn) == 16:
+                    dcna = input("Enter Name of card holder:")
+                    exp = input("Enter card expiry date:")
                     cvv = input("Enter cvv:")
                     return True
                 else:
@@ -619,6 +621,8 @@ def checkout(): #Checkout page
             while True:
                 ccn = input("Enter Credit Card number:")
                 if len(ccn) == 16:
+                    ccna = input("Enter Name of card holder:")
+                    exp = input("Enter card expiry date:")
                     cvv = input("Enter cvv:")
                     return True
                 else:
