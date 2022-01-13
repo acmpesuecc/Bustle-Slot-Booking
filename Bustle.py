@@ -482,7 +482,7 @@ def Restaurant(): #Choosing Restaurants
                         elif ychoice == 'n':
                             clear()
                     else:
-                        print(f"\nSorry! {no} number of tables unavailable in time slot {tname}")
+                        print(f"\nSorry! {no} table(s) unavailable in time slot {tname}")
                         time.sleep(3)
                         clear()
                 elif nchoice == 'c':
@@ -573,7 +573,7 @@ def Hotel():
                                 clear()
                                 Hotel()
                         else:
-                            print(f"\nSorry! {nchoice} rooms unavailable")
+                            print(f"\nSorry! {nchoice} room(s) unavailable")
                             time.sleep(3)
                             clear()
                     elif nchoice == 'c':
