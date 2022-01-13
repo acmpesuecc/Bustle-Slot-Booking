@@ -73,7 +73,7 @@ def admin():
                     service=fileRead(tempname)
             while True:
                 try:
-                    npname,npseat,npprice=input("Enter Name\Available Slots\Price per table\n").split('\\')
+                    npname,npseat,npprice=input("Enter Name\Available Slots\Price\n").split('\\')
                 except:
                     print("Incorrect number of inputs received")
                     time.sleep(3)
@@ -332,7 +332,12 @@ def home():#Home page
         print("Loading...");time.sleep(0.5);clear()
         Booking()
     elif homechoice=='2':
-        print("History page here")
+        clear()
+        print("Loading");time.sleep(0.5);clear()
+        print("Loading.");time.sleep(0.5);clear()
+        print("Loading..");time.sleep(0.5);clear()
+        print("Loading...");time.sleep(0.5);clear()
+        BookingHist(None,None,None,None)
     elif homechoice=='3':
         print("Voucher page here")
     elif homechoice=='4':
@@ -374,10 +379,21 @@ def Booking(): #Bookings page
     bchoice = input("Which service would you like to book?\n1.Restaurant\n2.Hotel\n3.Bus\n4.Cycle Repair\n5.Spa\n")
     if bchoice == '1':
         Restaurant()
+    elif bchoice == '2':
+        Hotel()
     else:
         clear()
-        menu()
+        home()
 def Restaurant(): #Choosing Restaurants
+    from datetime import datetime
+    try:
+        fileRead("restaurant")
+    except:
+        clear()
+        print("Error 404: Page not found")
+        time.sleep(3)
+        home()
+    name = "Restaurant"
     clear()
     slots = fileRead("restaurant")
     print("Which restaurant would you like to book a table in?")
@@ -414,7 +430,6 @@ def Restaurant(): #Choosing Restaurants
             elif tchoice == '6':
                 tname = "8:00-10:00"
             elif tchoice == 'c':
-                
                 clear()
                 Restaurant()
             else:
@@ -423,7 +438,7 @@ def Restaurant(): #Choosing Restaurants
             if tname in booking:
                 avail = int(booking[tname][0])
                 clear()
-                print(f"No. of seats available in time slot {tname}: {avail}")
+                print(f"No. of tables available in time slot {tname}: {avail}")
                 nchoice = input("\nHow many persons would you like to book for?\n")
                 if nchoice.isdigit():   
                     if (avail - int(nchoice)) > 0:
@@ -454,10 +469,10 @@ def Restaurant(): #Choosing Restaurants
                                     avail = avail - no
                                     booking.update({tname:[avail,booking[tname][1]]})
                                     fileWrite(rchoice,booking)
+                                    now = datetime.now()
                                     time.sleep(3)
                                     clear()
-                                    BookingHist(rchoice)
-                                    home()
+                                    BookingHist(rchoice,name,price,now)
                                 else:
                                     print("Payment Failed!")
                                     Restaurant()
@@ -488,40 +503,167 @@ def Restaurant(): #Choosing Restaurants
         time.sleep(3)
         clear()
         Restaurant()
+def Hotel():
+    from datetime import datetime
+    try:
+        fileRead("restaurant")
+    except:
+        clear()
+        print("Error 404: Page not found")
+        time.sleep(3)
+        home()
+    name = 'Hotel'
+    clear()
+    slots = fileRead("hotel")
+    print("Which hotel would you like to book a room in?")
+    for key in slots:
+        print(key)
+    print("(Press 'c' to go back)")
+    hchoice = input()
+    if hchoice in slots:
+        clear()
+        try:
+            fileRead(hchoice)
+        except:
+            fileWrite(hchoice,[slots[hchoice][0],slots[hchoice][1]])
+        booking = fileRead(hchoice)
+        while True:
+            print("(Note: Check-in time: 10:00 am and Check-out time: 12:00 pm for all bookings)")
+            print(f"Number of rooms available: {booking[0]}")
+            print(f"Price per room: {booking[1]}")
+            bchoice = input(f"Would you like to book in {hchoice}?(y/n): ")
+            avail = int(booking[0])
+            if bchoice == 'y':
+                while True:
+                    nchoice = input("How many rooms would you like to book?\n(Press 'c' to go back)\n")
+                    if nchoice.isdigit():
+                        if (avail-int(nchoice)) > 0:
+                            price = int(booking[1])*int(nchoice)
+                            clear()
+                            print(f"No. of rooms to be booked: {nchoice}")
+                            print(f"Total price: {price}")
+                            cchoice = input("\nDo you wish to proceed to checkout?(y/n)\n")
+                            if cchoice == 'y':
+                                clear()
+                                print("Loading");time.sleep(0.5);clear()
+                                print("Loading.");time.sleep(0.5);clear()
+                                print("Loading..");time.sleep(0.5);clear()
+                                print("Loading...");time.sleep(0.5);clear()
+                                print("Hotel name:",hchoice)
+                                print("No.of rooms to be booked:",nchoice)
+                                print("Total price:",price)
+                                pchoice = input("\nDo you wish to continue?(y/n)\n")
+                                if pchoice == 'y':
+                                    if checkout():
+                                        print("Payment successful")
+                                        avail = avail - int(nchoice)
+                                        booking[0] = str(avail)
+                                        fileWrite(hchoice,booking)
+                                        time.sleep(3)
+                                        now = datetime.now()
+                                        clear()
+                                        BookingHist(hchoice,name,price,now)
+                                    else:
+                                        print("Payment Failed!")
+                                        Hotel()
+                                elif pchoice == 'n':
+                                    clear()
+                                    Hotel()
+                            elif cchoice == 'n':
+                                clear()
+                                Hotel()
+                        else:
+                            print(f"\nSorry! {nchoice} rooms unavailable")
+                            time.sleep(3)
+                            clear()
+                    elif nchoice == 'c':
+                        clear()
+                        Hotel()
+                    else:
+                        print("Invalid input!")
+                        time.sleep(3)
+                        clear()
+            elif bchoice == 'n':
+                clear()
+                Hotel()
+            else:
+                print("Invalid input!")
+                time.sleep(3)
+                clear()
+    elif hchoice == 'c':
+        clear()
+        Booking()
+    else:
+        print("\nPlease give a valid hotel name!")
+        time.sleep(3)
+        Hotel()
 def checkout(): #Checkout page
     clear()
     print("Loading");time.sleep(0.5);clear()
     print("Loading.");time.sleep(0.5);clear()
     print("Loading..");time.sleep(0.5);clear()
     print("Loading...");time.sleep(0.5);clear()
-    pchoice = int(input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n"))
-    if pchoice == 1:
-        while True:
-            dcn = input("Enter Debit Card number:")
-            if len(dcn) == 16:
-                cvv = input("Enter cvv:")
-                return True
-            else:
-                print("Invalid Debit Card number!")
-                time.sleep(3)
-                clear()
-    elif pchoice == 2:
-        while True:
-            ccn = input("Enter Credit Card number:")
-            if len(ccn) == 16:
-                cvv = input("Enter cvv:")
-                return True
-            else:
-                print("Invalid Credit Card number!")
-                time.sleep(3)
-                clear()
-def BookingHist(a):
+    while True:
+        pchoice = int(input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n"))
+        if pchoice == 1:
+            while True:
+                dcn = input("Enter Debit Card number:")
+                if len(dcn) == 16:
+                    cvv = input("Enter cvv:")
+                    return True
+                else:
+                    print("Invalid Debit Card number!")
+                    time.sleep(3)
+                    clear()
+        elif pchoice == 2:
+            while True:
+                ccn = input("Enter Credit Card number:")
+                if len(ccn) == 16:
+                    cvv = input("Enter cvv:")
+                    return True
+                else:
+                    print("Invalid Credit Card number!")
+                    time.sleep(3)
+                    clear()
+        else:
+            print("Invalid Input!")
+            time.sleep(3)
+            clear()
+def BookingHist(name, service, price, time):
+    from tabulate import tabulate
     global user
+    a = {}
     try:
         fileRead("bookings")
     except:
-        fileWrite("bookings","")
-    hist = dict()
-    hist[user] = a
+        fileWrite("bookings", a)
+    hist = fileRead("bookings") 
+    if user not in hist.keys():
+        hist[user] = ([],[],[],[])
+    n = hist[user][1]
+    s = hist[user][0]
+    p = hist[user][2]
+    t = hist[user][3]
+    if name != None and service != None and price != None and time != None:
+        n.append(name)
+        s.append(service)
+        p.append(price)
+        t.append(time)
+        hist.update({user:(s,n,p,t)})
     fileWrite("bookings",hist)
+    print("\t\t\tBooking history")
+    print(f"\nUser:{user}\n")
+    x = hist[user][0]
+    y = hist[user][1]
+    z = hist[user][2]
+    p = hist[user][3]
+    '''for l in range(0,len(x)):
+        print(f"{l+1}){x[l]}\t{y[l]}\t{z[l]}")'''
+    order = list(zip(x,y,z,p))
+    l = ["Service","Name","Amount paid","Time of booking"]
+    order.insert(0,l)
+    print(tabulate(order, headers = "firstrow", tablefmt = "fancy_grid", showindex = range(1,len(order))))
+    bchoice = input("\n(Press 'c' to go back)\n")
+    if bchoice == 'c':
+        home()
 menu()#Starts Execution here
