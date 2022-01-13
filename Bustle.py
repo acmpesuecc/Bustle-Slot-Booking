@@ -235,7 +235,7 @@ def games():
     print("Which game would you like to play?\n")
     gchoice=input("1)Snake!\n2)Sudoku(Coming Soon...)\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
     if gchoice =='1':
-        exec(open("snake.py").read())
+        exec(open("game_files/snake.py").read())
         with open("tempscore","r") as file:
             score=int(file.read())
         os.remove("tempscore")
