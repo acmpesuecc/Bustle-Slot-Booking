@@ -41,6 +41,9 @@ def register(): #Adds new user account
         print("Account already exists!")
     else:
         setpass(usn,0)
+        vdata=fileRead("bustle_files/vouchers")
+        vdata.update({usn:vdata["admine"]})
+        fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
 def voucher():
     accounts=fileRead("UserAcc")
@@ -243,7 +246,7 @@ def admin():
                     print("Which voucher would you like to delete?")
                     print(vfile["admine"][0])
                     vcode=input()
-                    try:
+                    '''try:
                         i=vfile["admine"][0].index(vcode)
                         for user in vfile:
                             del vfile[user][0][i]
@@ -258,7 +261,24 @@ def admin():
                     except:
                         print("Invalid input!")
                         time.sleep(3)
+                        clear()'''
+                    if vcode in vfile["admine"][0]:
+                        i=vfile["admine"][0].index(vcode)
+                        for user in vfile:
+                            del vfile[user][0][i]
+                            del vfile[user][1][i]
+                            del vfile[user][2][i]
+                            vfile.update({user:vfile[user]})
+                            fileWrite("bustle_files/vouchers",vfile)
                         clear()
+                        print("Voucher Deleted!")
+                        time.sleep(3)
+                        admin()
+                    else:
+                        print("Invalid input! Reinitializing page...")
+                        time.sleep(2)
+                        clear()
+                        continue
                 else:
                     print("No vouchers found!")
                     time.sleep(3)
@@ -420,8 +440,10 @@ def home():#Home page
 def menu():
     try: 
         fileRead("UserAcc")
+        fileRead("bustle_files/vouchers")
     except:
         fileWrite("UserAcc",{'admine':'mpass'})
+        fileWrite("bustle_files/vouchers",{})
     while True:
         loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
         if loginno=='1':
@@ -438,6 +460,8 @@ def menu():
             fileWrite("UserAcc",{'admine':'mpass'})
         elif loginno=='m':#TEMPORARY
             admin()
+        elif loginno=='vdisp':
+            print(fileRead("bustle_files/vouchers"))
         else:
             print("Invalid Input")
             time.sleep(3)
