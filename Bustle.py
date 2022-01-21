@@ -207,10 +207,6 @@ def admin():
                 time.sleep(3)
                 clear()
     elif mastchoice1=='3':
-        try:
-            fileRead("bustle_files/vouchers")
-        except:
-            fileWrite("bustle_files/vouchers",{"admine":[[],[],[]]})
         vfile=fileRead("bustle_files/vouchers")
         vchoice=input("What would you like to do?\n1)Add Voucher\n2)Delete voucher\n")
         if vchoice=='1':
@@ -223,18 +219,21 @@ def admin():
                     time.sleep(3)
                     clear()
             for user in fileRead("UserAcc"):
-                while True:
-                    if user in vfile:
-                        vfile[user][0].append(vcode)#list of all voucher codes
-                        vfile[user][1].append(vdesc)#list of all voucher descriptions
-                        vfile[user][2].append("unredeemed")#list of all voucher status  
-                        vfile.update({user:vfile[user]})
-                        fileWrite("bustle_files/vouchers",vfile)
-                        break
-                    else:
-                        vfile.update({user:[[],[],[]]})
-                        fileWrite("bustle_files/vouchers",vfile)
-                        vfile=fileRead("bustle_files/vouchers")
+                if user in vfile:
+                    print(user)
+                    print(vfile[user])
+                    print(vfile)
+                    input()
+                    vfile[user][0].append(vcode)#list of all voucher codes
+                    vfile[user][1].append(vdesc)#list of all voucher descriptions
+                    vfile[user][2].append("unredeemed")#list of all voucher status  
+                    print(user)
+                    print(vfile[user])
+                    input()
+                    vfile.update({user:vfile[user]})
+                    print(vfile)
+                    break
+            fileWrite("bustle_files/vouchers",vfile)
             clear()
             print("Voucher Added!")
             time.sleep(3)
@@ -246,22 +245,6 @@ def admin():
                     print("Which voucher would you like to delete?")
                     print(vfile["admine"][0])
                     vcode=input()
-                    '''try:
-                        i=vfile["admine"][0].index(vcode)
-                        for user in vfile:
-                            del vfile[user][0][i]
-                            del vfile[user][1][i]
-                            del vfile[user][2][i]
-                            vfile.update({user:vfile[user]})
-                            fileWrite("bustle_files/vouchers",vfile)
-                        clear()
-                        print("Voucher Deleted!")
-                        time.sleep(3)
-                        admin()
-                    except:
-                        print("Invalid input!")
-                        time.sleep(3)
-                        clear()'''
                     if vcode in vfile["admine"][0]:
                         i=vfile["admine"][0].index(vcode)
                         for user in vfile:
@@ -293,29 +276,60 @@ def admin():
             clear()
             admin()
     elif mastchoice1=='4':
+        mchoice=input("What would you like to do?\n1)Enable/Disable user\n2)Delete a user\n")
         accounts = fileRead("UserAcc")
-        print("Which account do you wish to manage?")
-        for key in accounts:
-            if key != "admine":
-                print(key)  
-        edchoice = input()
-        if edchoice in accounts and edchoice[-1] == 'e':
-            print(f"Do you wish to disable {edchoice}(y/n)?")
-            yncheck = input()
-            if yncheck == 'y':
-                accounts[edchoice[0:-1]+'d'] = accounts[edchoice]
-                del accounts[edchoice]
-        elif edchoice in accounts and edchoice[-1] == 'd':
-            print(f"Do you wish to enable {edchoice}?(y/n)")
-            yncheck = input()
-            if yncheck == 'y':
-                accounts[edchoice[0:-1]+'e'] = accounts[edchoice]
-                del accounts[edchoice]
-        else:
-            print("Account doesnt exist! Try again!")
-            time.sleep(3)
+        if mchoice=='1':
+            print("Which account do you wish to manage?")
+            for key in accounts:
+                if key != "admine":
+                    print(key)  
+            edchoice = input()
+            if edchoice in accounts and edchoice[-1] == 'e':
+                print(f"Do you wish to disable {edchoice}(y/n)?")
+                yncheck = input()
+                if yncheck == 'y':
+                    accounts[edchoice[0:-1]+'d'] = accounts[edchoice]
+                    del accounts[edchoice]
+            elif edchoice in accounts and edchoice[-1] == 'd':
+                print(f"Do you wish to enable {edchoice}?(y/n)")
+                yncheck = input()
+                if yncheck == 'y':
+                    accounts[edchoice[0:-1]+'e'] = accounts[edchoice]
+                    del accounts[edchoice]
+            else:
+                print("Account doesnt exist! Try again!")
+                time.sleep(3)
+                admin()
+            fileWrite("UserAcc",accounts)
+        elif mchoice=='2':
+            for key in accounts:
+                if key != "admine":
+                    print(key)  
+            usnchoice=input("Which user would you like to delete\n")
+            while True:
+                if usnchoice in accounts:
+                    del accounts[usnchoice]
+                    vfile=fileRead("bustle_files/vouchers")
+                    del vfile[usnchoice]
+                    fileWrite("UserAcc",accounts)
+                    fileWrite("bustle_files/vouchers",vfile)
+                    print("User deleted!")
+                    time.sleep(2)
+                    clear()
+                    break
+                elif usnchoice=='c':
+                    clear()
+                    break
+                else:
+                    print("Invalid Input! Reinitializing...")
+                    clear()
+        elif mchoice=='c':
+            clear()
             admin()
-        fileWrite("UserAcc",accounts)
+        else:
+            print("Invalid Input! Reinitializing...")
+            clear()
+            admin()
     elif mastchoice1=='5':
         logout()
     else:
@@ -443,7 +457,7 @@ def menu():
         fileRead("bustle_files/vouchers")
     except:
         fileWrite("UserAcc",{'admine':'mpass'})
-        fileWrite("bustle_files/vouchers",{})
+        fileWrite("bustle_files/vouchers",{"admine":[[],[],[]]})
     while True:
         loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
         if loginno=='1':
