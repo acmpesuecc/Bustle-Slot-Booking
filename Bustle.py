@@ -370,7 +370,7 @@ def games():#Function to display and launch games
     global user
     accounts=fileRead("bustle_files/UserAcc")
     print("Which game would you like to play?\n")
-    gchoice=input("1)Snake!\n2)Sudoku(Coming Soon...)\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
+    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
     if gchoice =='1':
         exec(open("game_files/snake.py").read())
         with open("tempscore","r") as file:
@@ -381,7 +381,15 @@ def games():#Function to display and launch games
         fileWrite("bustle_files/UserAcc",accounts)
         time.sleep(2)
     elif gchoice =='2':
-        exec(open("").read())
+        exec(open("game_files/TETRIS_FINAL.py").read())
+        clear()
+        with open("tempscore","r") as file:
+            score=int(file.read())
+        os.remove("tempscore")
+        accounts[user+'e'][1]+=int(score)
+        fileWrite("bustle_files/UserAcc",accounts)
+        print(f"Your Final Score was: {score}")
+        time.sleep(2)
     elif gchoice =='3':
         exec(open("").read())
     elif gchoice=='4':
@@ -470,8 +478,10 @@ def home():#Home page
         load()
         BookingHist(None,None,None,None)
     elif homechoice=='3':
+        clear()
         voucher()
     elif homechoice=='4':
+        clear()
         games()
     elif homechoice=='5':
         print("Settings page here")
