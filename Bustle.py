@@ -2,24 +2,25 @@ import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
-clear = lambda: os.system('cls')
-user = ''
+from tabulate import tabulate#Used to display a table
+clear = lambda: os.system('cls')#Lambda function to clear the screen
+user = ''#Global variable to record currently logged in user
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
         pickle.dump(data,file)
-def fileRead(filename):
+def fileRead(filename):#Universal function to read any mentioned file
     with open(filename,'rb') as file:
          data=pickle.load(file)
          return data
-def logout():
+def logout():#Function to display logout screen
     clear()
     print("Logging out");time.sleep(0.5);clear()
     print("Logging out.");time.sleep(0.5);clear()
     print("Logging out..");time.sleep(0.5);clear()
     print("Logging out...");time.sleep(0.5);clear()
     login()
-def setpass(usnID,score):
-    accounts=fileRead("UserAcc")
+def setpass(usnID,score):#Function to set the password and security question
+    accounts=fileRead("bustle_files/UserAcc")
     pass1=input("Enter a password:\n")
     pass1=pass1.strip()
     while True:
@@ -28,38 +29,73 @@ def setpass(usnID,score):
             sq=input("Enter your Security Question:\n")
             sa=input("Enter the answer for your Security Question:\nWARNING: Give an answer you can remember. You will need these in case you have to reset your account password!\n")
             accounts.update({usnID:[pass1,score,sq,sa]})
-            fileWrite('UserAcc',accounts)
+            fileWrite('bustle_files/UserAcc',accounts)
             return 
         else:
             print("Oops password doesn't match! Try again:")
-def register(): #Adds new user account  
+def register(): #Function to add new user account  
     usn=input("Enter a username:\n")    
     usn=usn.strip()
     usn=usn+'e'
-    accounts=fileRead("UserAcc")
+    accounts=fileRead("bustle_files/UserAcc")
     if usn in accounts:
         print("Account already exists!")
     else:
-        setpass(usn,0)
+        setpass(usn,1000)
         vdata=fileRead("bustle_files/vouchers")
         vdata.update({usn:vdata["admine"]})
         fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
-def voucher():
-    accounts=fileRead("UserAcc")
-    try:
-        fileRead("bustle_files/vouchers")
-    except:
-        fileWrite("bustle_files/vouchers","wb")
-    
-    h=["V.Code","Description","Status"]
-def load():
+def voucher():#Function to display and purchase vouchers
+    vfile=fileRead("bustle_files/vouchers")
+    accounts=fileRead("bustle_files/UserAcc")
+    global user
+    clear()
+    print("\t\t\t\tVouchers!")
+    print(f"\nUser:{user}\n")
+    print(f"Score:{accounts[user+'e'][1]}\n")
+    data =list(zip(vfile[user+'e'][0],vfile[user+'e'][1],vfile[user+'e'][2],vfile[user+'e'][3]))
+    print(data)
+    print(tabulate(data, headers=["V.Code","Description","Bustle Points","Purchased"], tablefmt = "fancy_grid"))
+    vchoice=input("Which voucher would you like to purchase?\n")
+    if vchoice in vfile[user+'e'][0]:
+        vquantity=int(input("How many would you like to buy?\n"))
+        i=vfile[user+'e'][0].index(vchoice)
+        if int(accounts[user+'e'][1])>=(int(vfile[user+'e'][2][i])*vquantity):
+            print(f"{vquantity} Vouchers Added!")
+            print(vfile)
+            print(accounts)
+            input()
+            vfile[user+'e'][3][i]=int(vfile[user+'e'][3][i])+vquantity
+            accounts[user+'e'][1]=int(accounts[user+'e'][1])-(int(vfile[user+'e'][2][i])*vquantity)
+            print(vfile)
+            print(accounts)
+            input()
+            fileWrite("bustle_files/vouchers",vfile)
+            fileWrite("bustle_files/UserAcc",accounts)
+        elif int(accounts[user+'e'][1])<(int(vfile[user+'e'][2][i])*vquantity):
+            ynchoice=input("Insufficient Bustle Points!\nWould you like to play some games to get more Bustle Points?(y/n)\n")
+            if ynchoice=='y':
+                clear()
+                games()
+            else:
+                clear()
+                home()
+    elif vchoice=='c':
+        clear()
+        home()
+    else:
+        print("Invalid input. Reinitializing page...")
+        time.sleep(2)
+        clear()
+        voucher()
+def load():#Function to display loading screen
     print("Loading");time.sleep(0.5);clear()
     print("Loading.");time.sleep(0.5);clear()
     print("Loading..");time.sleep(0.5);clear()
     print("Loading...");time.sleep(0.5);clear()
-def admin():
-    adminpass=fileRead("UserAcc")
+def admin():#Function to allow admin to manage the program
+    adminpass=fileRead("bustle_files/UserAcc")
     adminpass=adminpass["admine"]
     clear()
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage Vouchers\n4)Manage User Accounts\n5)Logout\n")
@@ -69,24 +105,24 @@ def admin():
             if mastchoice2=='1':
                 tempname="restaurant"
                 try:
-                    service=fileRead(tempname)
+                    service=fileRead(f"bustle_files/{tempname}")
                 except:
-                    fileWrite(tempname,{})
-                    service=fileRead(tempname)
+                    fileWrite(f"bustle_files/{tempname}",{})
+                    service=fileRead(f"bustle_files/{tempname}")
             elif mastchoice2=='2':
                 tempname="hotel"
                 try:
-                    service=fileRead(tempname)
+                    service=fileRead(f"bustle_files/{tempname}")
                 except:
-                    fileWrite(tempname,{})
-                    service=fileRead(tempname)
+                    fileWrite(f"bustle_files/{tempname}",{})
+                    service=fileRead(f"bustle_files/{tempname}")
             elif mastchoice2=='3':
                 tempname="bus"
                 try:
-                    service=fileRead(tempname)
+                    service=fileRead(f"bustle_files/{tempname}")
                 except:
-                    fileWrite(tempname,{})
-                    service=fileRead(tempname)
+                    fileWrite(f"bustle_files/{tempname}",{})
+                    service=fileRead(f"bustle_files/{tempname}")
             while True:
                 try:
                     npname,npseat,npprice=input("Enter Name/Available Slots/Price\n").split('/')
@@ -101,7 +137,7 @@ def admin():
                 else:
                     service.update({npname:[npseat,npprice]})
                     break
-            fileWrite(tempname,service)
+            fileWrite(f"bustle_files/{tempname}",service)
             clear()
             print("Provider successfully added!")
             time.sleep(3)
@@ -110,17 +146,17 @@ def admin():
             if mastchoice2=='4':
                 tempname="spa"
                 try:
-                    service=fileRead(tempname)
+                    service=fileRead(f"bustle_files/{tempname}")
                 except:
-                    fileWrite(tempname,{})
-                    service=fileRead(tempname)
+                    fileWrite(f"bustle_files/{tempname}",{})
+                    service=fileRead(f"bustle_files/{tempname}")
             elif mastchoice2=='5':
                 tempname="cycle"
                 try:
-                    service=fileRead(tempname)
+                    service=fileRead(f"bustle_files/{tempname}")
                 except:
-                    fileWrite(tempname,{})
-                    service=fileRead(tempname)
+                    fileWrite(f"bustle_files/{tempname}",{})
+                    service=fileRead(f"bustle_files/{tempname}")
             while True:
                 try:
                     if mastchoice2=='5':
@@ -140,7 +176,7 @@ def admin():
                 else:
                     service.update({npname:[npexp,nptype]})
                     break
-            fileWrite(tempname,service)
+            fileWrite(f"bustle_files/{tempname}",service)
             clear()
             print("Provider successfully added!")
             time.sleep(3)
@@ -174,7 +210,7 @@ def admin():
                 clear()
                 continue
             try:
-                service=fileRead(tempname)
+                service=fileRead(f"bustle_files/{tempname}")
                 if service:
                     for key in service:
                      print(key)
@@ -196,7 +232,7 @@ def admin():
                 loginpass=stdiomask.getpass("Enter admin password to confirm:\n")
                 if loginpass==adminpass:
                     del service[dpname]
-                    fileWrite(tempname,service)
+                    fileWrite(f"bustle_files/{tempname}",service)
                     print("Provider Deleted!\n")
                 else:
                  print("Incorrect password. Provider deleletion failed")
@@ -212,26 +248,19 @@ def admin():
         if vchoice=='1':
             while True:
                 try:
-                    vcode,vdesc=input("Enter Voucher Code/Voucher Description\n").split('/')
+                    vcode,vdesc,vscore=input("Enter Voucher Code/Voucher Description/Cost\n").split('/')
                     break
                 except:
                     print("Invalid Input! Reinitializing page")
                     time.sleep(3)
                     clear()
-            for user in fileRead("UserAcc"):
+            for user in fileRead("bustle_files/UserAcc"):
                 if user in vfile:
-                    print(user)
-                    print(vfile[user])
-                    print(vfile)
-                    input()
                     vfile[user][0].append(vcode)#list of all voucher codes
                     vfile[user][1].append(vdesc)#list of all voucher descriptions
-                    vfile[user][2].append("unredeemed")#list of all voucher status  
-                    print(user)
-                    print(vfile[user])
-                    input()
+                    vfile[user][2].append(vscore)#list of all costs
+                    vfile[user][3].append(0)#quantity of vouchers present
                     vfile.update({user:vfile[user]})
-                    print(vfile)
                     break
             fileWrite("bustle_files/vouchers",vfile)
             clear()
@@ -251,6 +280,7 @@ def admin():
                             del vfile[user][0][i]
                             del vfile[user][1][i]
                             del vfile[user][2][i]
+                            del vfile[user][3][i]
                             vfile.update({user:vfile[user]})
                             fileWrite("bustle_files/vouchers",vfile)
                         clear()
@@ -277,7 +307,7 @@ def admin():
             admin()
     elif mastchoice1=='4':
         mchoice=input("What would you like to do?\n1)Enable/Disable user\n2)Delete a user\n")
-        accounts = fileRead("UserAcc")
+        accounts = fileRead("bustle_files/UserAcc")
         if mchoice=='1':
             print("Which account do you wish to manage?")
             for key in accounts:
@@ -300,7 +330,7 @@ def admin():
                 print("Account doesnt exist! Try again!")
                 time.sleep(3)
                 admin()
-            fileWrite("UserAcc",accounts)
+            fileWrite("bustle_files/UserAcc",accounts)
         elif mchoice=='2':
             for key in accounts:
                 if key != "admine":
@@ -311,7 +341,7 @@ def admin():
                     del accounts[usnchoice]
                     vfile=fileRead("bustle_files/vouchers")
                     del vfile[usnchoice]
-                    fileWrite("UserAcc",accounts)
+                    fileWrite("bustle_files/UserAcc",accounts)
                     fileWrite("bustle_files/vouchers",vfile)
                     print("User deleted!")
                     time.sleep(2)
@@ -336,9 +366,9 @@ def admin():
         print("Invalid Input! Reinitializing page...")
         time.sleep(3)
         admin()
-def games():
+def games():#Function to display and launch games
     global user
-    accounts=fileRead("UserAcc")
+    accounts=fileRead("bustle_files/UserAcc")
     print("Which game would you like to play?\n")
     gchoice=input("1)Snake!\n2)Sudoku(Coming Soon...)\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
     if gchoice =='1':
@@ -348,7 +378,7 @@ def games():
         os.remove("tempscore")
         if score>10:
             accounts[user+'e'][1]+=int((score-10)/2)
-        fileWrite("UserAcc",accounts)
+        fileWrite("bustle_files/UserAcc",accounts)
         time.sleep(2)
     elif gchoice =='2':
         exec(open("").read())
@@ -360,7 +390,7 @@ def games():
 def login(): #Checks and logs in user
     clear()
     n=5
-    accounts=fileRead("UserAcc")
+    accounts=fileRead("bustle_files/UserAcc")
     bool=True
     for key in accounts:
         if key[-1]=='e':
@@ -386,7 +416,7 @@ def login(): #Checks and logs in user
                 print("Too many failed attempts. You will now be redirected to the login page")
                 accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
                 del accounts[usnchoice]
-                fileWrite('UserAcc',accounts)
+                fileWrite('bustle_files/UserAcc',accounts)
                 return  False    
     elif usnchoice in accounts and bool==True:
         while n>=0:
@@ -415,7 +445,7 @@ def login(): #Checks and logs in user
                     print("Too many failed attempts. You will now be redirected to the login page")
                     accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
                     del accounts[usnchoice]
-                    fileWrite('UserAcc',accounts)
+                    fileWrite('bustle_files/UserAcc',accounts)
                     return  False   
     elif usnchoice in accounts and bool==False:
         print("This account is disabled. Kindly contact the admin to re-enable your account")
@@ -451,13 +481,13 @@ def home():#Home page
         print("Invalid Input")
         time.sleep(2)
         home()
-def menu():
+def menu():#Starting page of the program
     try: 
-        fileRead("UserAcc")
+        fileRead("bustle_files/UserAcc")
         fileRead("bustle_files/vouchers")
     except:
-        fileWrite("UserAcc",{'admine':'mpass'})
-        fileWrite("bustle_files/vouchers",{"admine":[[],[],[]]})
+        fileWrite("bustle_files/UserAcc",{'admine':'mpass'})
+        fileWrite("bustle_files/vouchers",{"admine":[[],[],[],[]]})
     while True:
         loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
         if loginno=='1':
@@ -467,11 +497,11 @@ def menu():
             time.sleep(3)
             clear()
         elif loginno=='disp': #Dev Command
-            accounts=fileRead('UserAcc')
+            accounts=fileRead('bustle_files/UserAcc')
             print(accounts)
         elif loginno=='fclr': #Dev Command
-            os.remove("UserAcc")
-            fileWrite("UserAcc",{'admine':'mpass'})
+            os.remove("bustle_files/UserAcc")
+            fileWrite("bustle_files/UserAcc",{'admine':'mpass'})
         elif loginno=='m':#TEMPORARY
             admin()
         elif loginno=='vdisp':
@@ -492,7 +522,7 @@ def Booking(): #Bookings page
 def Restaurant(): #Choosing Restaurants
     from datetime import datetime
     try:
-        fileRead("restaurant")
+        fileRead("bustle_files/restaurant")
     except:
         clear()
         print("Error 404: Page not found")
@@ -500,7 +530,7 @@ def Restaurant(): #Choosing Restaurants
         Booking()
     name = "Restaurant"
     clear()
-    slots = fileRead("restaurant")
+    slots = fileRead("bustle_files/restaurant")
     print("Which restaurant would you like to book a table in?")
     for key in slots:
         print(key)
@@ -508,10 +538,10 @@ def Restaurant(): #Choosing Restaurants
     rchoice = input()
     if rchoice in slots:
         try:
-            fileRead(rchoice)
+            fileRead(f"bustle_files/{rchoice}")
         except:
-            fileWrite(rchoice, {"10:00-12:00":[slots[rchoice][0],slots[rchoice][1]],"12:00-2:00":[slots[rchoice][0],slots[rchoice][1]],"2:00-4:00":[slots[rchoice][0],slots[rchoice][1]],"4:00-6:00":[slots[rchoice][0],slots[rchoice][1]],"6:00-8:00":[slots[rchoice][0],slots[rchoice][1]],"8:00-10:00":[slots[rchoice][0],slots[rchoice][1]]})
-        booking = fileRead(rchoice)
+            fileWrite(f"bustle_files/{rchoice}", {"10:00-12:00":[slots[rchoice][0],slots[rchoice][1]],"12:00-2:00":[slots[rchoice][0],slots[rchoice][1]],"2:00-4:00":[slots[rchoice][0],slots[rchoice][1]],"4:00-6:00":[slots[rchoice][0],slots[rchoice][1]],"6:00-8:00":[slots[rchoice][0],slots[rchoice][1]],"8:00-10:00":[slots[rchoice][0],slots[rchoice][1]]})
+        booking = fileRead(f"bustle_files/{rchoice}")
         print("\nNo. of seats per table: 4")
         print(f"Price per table: {slots[rchoice][1]}")
         while True:
@@ -570,7 +600,7 @@ def Restaurant(): #Choosing Restaurants
                                     print("Payment successful")
                                     avail = avail - no
                                     booking.update({tname:[avail,booking[tname][1]]})
-                                    fileWrite(rchoice,booking)
+                                    fileWrite(f"bustle_files/{rchoice}",booking)
                                     now = datetime.now()
                                     time.sleep(3)
                                     clear()
@@ -605,10 +635,10 @@ def Restaurant(): #Choosing Restaurants
         time.sleep(3)
         clear()
         Restaurant()
-def Hotel():
+def Hotel():#Funtion to book hotels
     from datetime import datetime
     try:
-        fileRead("hotel")
+        fileRead("bustle_files/hotel")
     except:
         clear()
         print("Error 404: Page not found")
@@ -616,7 +646,7 @@ def Hotel():
         Booking()
     name = 'Hotel'
     clear()
-    slots = fileRead("hotel")
+    slots = fileRead("bustle_files/hotel")
     print("Which hotel would you like to book a room in?")
     for key in slots:
         print(key)
@@ -625,10 +655,10 @@ def Hotel():
     if hchoice in slots:
         clear()
         try:
-            fileRead(hchoice)
+            fileRead(f"bustle_files/{hchoice}")
         except:
-            fileWrite(hchoice,[slots[hchoice][0],slots[hchoice][1]])
-        booking = fileRead(hchoice)
+            fileWrite(f"bustle_files/{hchoice}",[slots[hchoice][0],slots[hchoice][1]])
+        booking = fileRead(f"bustle_files/{hchoice}")
         while True:
             print("(Note: Check-in time: 10:00 am and Check-out time: 12:00 pm for all bookings)")
             print(f"Number of rooms available: {booking[0]}")
@@ -657,7 +687,7 @@ def Hotel():
                                         print("Payment successful")
                                         avail = avail - int(nchoice)
                                         booking[0] = str(avail)
-                                        fileWrite(hchoice,booking)
+                                        fileWrite(f"bustle_files/{hchoice}",booking)
                                         time.sleep(3)
                                         now = datetime.now()
                                         clear()
@@ -729,15 +759,14 @@ def checkout(): #Checkout page
             print("Invalid Input!")
             time.sleep(3)
             clear()
-def BookingHist(name, service, price, time):
-    from tabulate import tabulate
+def BookingHist(name, service, price, time):#Funtion to display the Bookings History page
     global user
     a = {}
     try:
-        fileRead("bookings")
+        fileRead("bustle_files/bookings")
     except:
-        fileWrite("bookings", a)
-    hist = fileRead("bookings") 
+        fileWrite("bustle_files/bookings", a)
+    hist = fileRead("bustle_files/bookings") 
     if user not in hist.keys():
         hist[user] = ([],[],[],[])
     x = hist[user][1]
@@ -750,7 +779,7 @@ def BookingHist(name, service, price, time):
         p.append(price)
         z.append(time)
         hist.update({user:(y,x,p,z)})
-    fileWrite("bookings",hist)
+    fileWrite("bustle_files/bookings",hist)
     print("\t\t\tBooking history")
     print(f"\nUser:{user}\n")
     order = list(zip(x,y,z,p))
