@@ -3,6 +3,8 @@ import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
 from tabulate import tabulate#Used to display a table
+from copy import deepcopy#Used to create new voucher values with different references
+import pdb
 clear = lambda: os.system('cls')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
 def fileWrite(filename,data):#Universal function to write to any mentioned file
@@ -43,7 +45,8 @@ def register(): #Function to add new user account
     else:
         setpass(usn,1000)
         vdata=fileRead("bustle_files/vouchers")
-        vdata.update({usn:vdata["admine"]})
+        vdatacopy=deepcopy(vdata["admine"])
+        vdata.update({usn:vdatacopy})
         fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
 def voucher():#Function to display and purchase vouchers
@@ -55,24 +58,18 @@ def voucher():#Function to display and purchase vouchers
     print(f"\nUser:{user}\n")
     print(f"Score:{accounts[user+'e'][1]}\n")
     data =list(zip(vfile[user+'e'][0],vfile[user+'e'][1],vfile[user+'e'][2],vfile[user+'e'][3]))
-    print(data)
     print(tabulate(data, headers=["V.Code","Description","Bustle Points","Purchased"], tablefmt = "fancy_grid"))
     vchoice=input("Which voucher would you like to purchase?\n")
     if vchoice in vfile[user+'e'][0]:
         vquantity=int(input("How many would you like to buy?\n"))
-        i=vfile[user+'e'][0].index(vchoice)
+        i=vfile["admine"][0].index(vchoice)
         if int(accounts[user+'e'][1])>=(int(vfile[user+'e'][2][i])*vquantity):
             print(f"{vquantity} Vouchers Added!")
-            print(vfile)
-            print(accounts)
-            input()
             vfile[user+'e'][3][i]=int(vfile[user+'e'][3][i])+vquantity
             accounts[user+'e'][1]=int(accounts[user+'e'][1])-(int(vfile[user+'e'][2][i])*vquantity)
-            print(vfile)
-            print(accounts)
-            input()
             fileWrite("bustle_files/vouchers",vfile)
             fileWrite("bustle_files/UserAcc",accounts)
+            time.sleep(2)
         elif int(accounts[user+'e'][1])<(int(vfile[user+'e'][2][i])*vquantity):
             ynchoice=input("Insufficient Bustle Points!\nWould you like to play some games to get more Bustle Points?(y/n)\n")
             if ynchoice=='y':
@@ -89,6 +86,7 @@ def voucher():#Function to display and purchase vouchers
         time.sleep(2)
         clear()
         voucher()
+    home()
 def load():#Function to display loading screen
     print("Loading");time.sleep(0.5);clear()
     print("Loading.");time.sleep(0.5);clear()
@@ -96,9 +94,10 @@ def load():#Function to display loading screen
     print("Loading...");time.sleep(0.5);clear()
 def settings():#Funtion for settings page
     clear()
+    global user
     accounts=fileRead("bustle_files/UserAcc")
     book= fileRead("bustle_files/bookings")
-    vouch=fileRead("buslte_files/vouchers")
+    vouch=fileRead("bustle_files/vouchers")
     setchoice=input("Settings:\n1)Clear Booking History\n2)Change Username\n3)Change Password\n4)Delete Profile\n5)About us\n6)Back\n")
     if setchoice=='1':
         while True:
@@ -106,8 +105,8 @@ def settings():#Funtion for settings page
             if ynchoice=='y':
                 clear()
                 print("Booking History Cleared!")
-                del book[user+'e']
-                book.update({user+'e':([],[],[],[])})
+                del book[user]
+                book.update({user:([],[],[],[])})
                 fileWrite("bustle_files/bookings",book)
                 time.sleep(2)
                 settings()
@@ -133,7 +132,8 @@ def settings():#Funtion for settings page
             fileWrite("bustle_files/UserAcc",accounts)
             fileWrite("bustle_files/vouchers",vouch)
             fileWrite("bustle_files/bookings",book)
-            print("Username changed! You will now be taken back to the settings page.\n")
+            print("Username changed! You will now be taken back to the settings page...")
+            user=newUSN
             time.sleep(2)
             settings()
         elif ynchoice=='n':
@@ -230,7 +230,7 @@ def admin():#Function to allow admin to manage the program
                 try:
                     service=fileRead(f"bustle_files/buss/{tempname}")
                 except:
-                    fileWrite(f"bustle_files/bus/{tempname}",{})
+                    fileWrite(f"bustle_files/buss/{tempname}",{})
                     service=fileRead(f"bustle_files/buss/{tempname}")
             while True:
                 try:
@@ -344,7 +344,7 @@ def admin():#Function to allow admin to manage the program
                     fileWrite(f"bustle_files/{tempname+'s'}/{tempname}",service)
                     print("Provider Deleted!\n")
                 else:
-                 print("Incorrect password. Provider deleletion failed")
+                    print("Incorrect password. Provider deleletion failed")
                 time.sleep(3)
                 clear()
             else:
@@ -593,6 +593,7 @@ def home():#Home page
         clear()
         games()
     elif homechoice=='5':
+        clear()
         settings()
     elif homechoice=='6':
         logout()
