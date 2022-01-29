@@ -1,3 +1,4 @@
+from calendar import c
 import pickle #To write in dictionary
 import os #Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
@@ -46,6 +47,7 @@ def register(): #Function to add new user account
         setpass(usn,1000)
         vdata=fileRead("bustle_files/vouchers")
         vdatacopy=deepcopy(vdata["admine"])
+        del vdatacopy[4]
         vdata.update({usn:vdatacopy})
         fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
@@ -87,6 +89,45 @@ def voucher():#Function to display and purchase vouchers
         clear()
         voucher()
     home()
+def vouchdisc(price):
+    global user
+    price=int(price)
+    ynchoice=input("Would you like to see the list of available vouchers?(y/n)\n")
+    if ynchoice=='y':
+        vfile=fileRead("bustle_files/vouchers")
+        vcodes=[]
+        vdesc=[]
+        vnum=[]
+        for n in vfile[user+'e'][3]:
+            if n>0:
+                i=vfile[user+'e'][3].index(n)
+                vcodes.append(vfile[user+'e'][0][i])
+                vdesc.append(vfile[user+'e'][1][i])
+                vnum.append(vfile[user+'e'][3][i])
+        while True:
+            print(f"Bill Amount:{price}")
+            data =list(zip(vcodes,vdesc,vnum))
+            print(tabulate(data, headers=["V.Code","Description","Available"], tablefmt = "fancy_grid"))
+            vchoice=input("Which Voucher would you like to apply?\n")
+            if vchoice in vcodes:
+                i=vfile[user+'e'][0].index(vchoice)
+                vfile[user+'e'][3][i]=int(vfile[user+'e'][3][i])-1
+                discexp=vfile["admine"][4][i]
+                price=eval(discexp)
+                return price
+            elif vchoice=='c':
+                return 0
+            else:
+                print("Invalid Input, Reinitializing page...")
+                time.sleep(2)
+                clear()
+    elif ynchoice=='n':
+        return -1
+    else:
+        print("Invalid input, reinitializing...")
+        time.sleep(2)
+        clear()
+        return 0
 def load():#Function to display loading screen
     print("Loading");time.sleep(0.5);clear()
     print("Loading.");time.sleep(0.5);clear()
@@ -358,6 +399,7 @@ def admin():#Function to allow admin to manage the program
             while True:
                 try:
                     vcode,vdesc,vscore=input("Enter Voucher Code/Voucher Description/Cost\n").split('/')
+                    vcalc=input("Enter the mathematical expression on \"price\"\n")
                     break
                 except:
                     print("Invalid Input! Reinitializing page")
@@ -365,12 +407,13 @@ def admin():#Function to allow admin to manage the program
                     clear()
             for user in fileRead("bustle_files/UserAcc"):
                 if user in vfile:
+                    print(vfile)
                     vfile[user][0].append(vcode)#list of all voucher codes
                     vfile[user][1].append(vdesc)#list of all voucher descriptions
                     vfile[user][2].append(vscore)#list of all costs
                     vfile[user][3].append(0)#quantity of vouchers present
                     vfile.update({user:vfile[user]})
-                    break
+            vfile["admine"][4].append(vcalc)#list of all the mathematical operations for vouchers
             fileWrite("bustle_files/vouchers",vfile)
             clear()
             print("Voucher Added!")
@@ -607,7 +650,7 @@ def menu():#Starting page of the program
         fileRead("bustle_files/vouchers")
     except:
         fileWrite("bustle_files/UserAcc",{'admine':'mpass'})
-        fileWrite("bustle_files/vouchers",{"admine":[[],[],[],[]]})
+        fileWrite("bustle_files/vouchers",{"admine":[[],[],[],[],[]]})
     while True:
         loginno=input("Welcome to Bustle!\n1.Login\n2.Register\n")
         if loginno=='1':
@@ -710,10 +753,21 @@ def Restaurant(): #Choosing Restaurants
                         if ychoice == 'y':
                             clear()
                             load()
-                            print("Restaurant name:",rchoice)
-                            print("Time slot:",tname)
-                            print("No of persons:",nchoice)
-                            print("Total price:",price)
+                            n=0
+                            while True:
+                                print("Restaurant name:",rchoice)
+                                print("Time slot:",tname)
+                                print("No of persons:",nchoice)
+                                print("Total price:",price)
+                                print(f"{n} vouchers applied!")
+                                check=vouchdisc(price)
+                                if check==-1:
+                                    break
+                                elif check==0:
+                                    continue
+                                else:
+                                    price=check
+                                    n+=1
                             pchoice = input("\nDo you wish to continue?(y/n)\n")
                             if pchoice == 'y':
                                 if checkout():
@@ -798,9 +852,20 @@ def Hotel():#Funtion to book hotels
                             if cchoice == 'y':
                                 clear()
                                 load()
-                                print("Hotel name:",hchoice)
-                                print("No.of rooms to be booked:",nchoice)
-                                print("Total price:",price)
+                                n=0
+                                while True:
+                                    print("Hotel name:",hchoice)
+                                    print("No.of rooms to be booked:",nchoice)
+                                    print("Total price:",price)
+                                    print(f"{n} vouchers applied!")
+                                    check=vouchdisc(price)
+                                    if check==-1:
+                                        break
+                                    elif check==0:
+                                        continue
+                                    else:
+                                        price=check
+                                        n+=1
                                 pchoice = input("\nDo you wish to continue?(y/n)\n")
                                 if pchoice == 'y':
                                     if checkout():
