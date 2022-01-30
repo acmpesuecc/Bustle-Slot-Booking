@@ -153,7 +153,11 @@ def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
             pattern="^5[1-5][0-9]{14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)[0-9]{12}$"
         elif ccomp=='2':
             pattern="^4[0-9]{12}(?:[0-9]{3})?$"
-        p=re.compile(pattern)
+    elif ctype == 'c':
+        clear()
+        load()
+        Booking()
+    p=re.compile(pattern)
     if(re.search(p,cnumber)):
         return True
     else:
@@ -941,35 +945,89 @@ def checkout(): #Checkout page
     load()
     while True:
         #pdb.set_trace()
-        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n")
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.Back\n")
         if pchoice == '1':
             while True:
-                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n")
-                clear()
-                dcn = input("Enter Debit Card number:")
-                if CardVerify(dcn,pchoice,cardchoice):
-                    dcna = input("Enter Name of card holder:")
-                    exp = input("Enter card expiry date:")
-                    cvv = input("Enter cvv:")
-                    return True
-                else:
-                    print("Invalid Debit Card number!")
-                    time.sleep(3)
+                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
+                if cardchoice != '3':
                     clear()
+                    dcn = input("Enter Debit Card number:")
+                    if CardVerify(dcn,pchoice,cardchoice):
+                        dcna = input("Enter Name of card holder:").strip()
+                        if dcna.replace(' ','').isalpha(): 
+                            try: 
+                                expm,expy = input("Enter card expiry date(MM/YY):").split("/")
+                            except:
+                                print("Enter Expiry date in the form MM/YY")
+                                time.sleep(3)
+                                clear()
+                                continue 
+                            if expm.isdigit() and expy.isdigit():
+                                cvv = input("Enter cvv:").strip()
+                                if cvv.isdigit() and len(cvv) == 3:
+                                    return True
+                                else:
+                                    print("Enter a valid cvv!")
+                                    time.sleep(3)
+                                    clear() 
+                            else:
+                                print("Enter valid exp date!")
+                                time.sleep(3)
+                                clear()
+                        else:
+                            print("Enter valid Debit card holder name!")
+                            time.sleep(3)
+                            clear()
+                    else:
+                        print("Invalid Debit Card number!")
+                        time.sleep(3)
+                        clear()
+                else:
+                    clear()
+                    checkout()
         elif pchoice == '2':
             while True:
-                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n")
-                clear()
-                ccn = input("Enter Credit Card number:")
-                if CardVerify(ccn,pchoice,cardchoice):
-                    ccna = input("Enter Name of card holder:")
-                    exp = input("Enter card expiry date:")
-                    cvv = input("Enter cvv:")
-                    return True
-                else:
-                    print("Invalid Credit Card number!")
-                    time.sleep(3)
+                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
+                if cardchoice != '3':
                     clear()
+                    ccn = input("Enter Credit Card number:")
+                    if CardVerify(ccn,pchoice,cardchoice):
+                        ccna = input("Enter Name of card holder:")
+                        if ccna.replace(' ','').isalpha():
+                            try:
+                                expm,expy = input("Enter card expiry date:").split("/")
+                            except:
+                                print("Enter Expiry date in the form MM/YY!")
+                                time.sleep(3)
+                                clear()
+                                continue
+                            if expm.isdigit() and expy.isdigit():
+                                cvv = input("Enter cvv:")
+                                if cvv.isdigit() and len(cvv) == 3:
+                                    return True
+                                else:
+                                    print("Enter a valid cvv!")
+                                    time.sleep(3)
+                                    clear()
+                            else:
+                                print("Enter valid exp date!")
+                                time.sleep(3)
+                                clear()
+                        else:
+                            print("Enter valid Debit card holder name!")
+                            time.sleep(3)
+                            clear()
+                    else:
+                        print("Invalid Credit Card number!")
+                        time.sleep(3)
+                        clear()
+                else:
+                    clear()
+                    checkout()
+        elif pchoice == '3':
+            clear()
+            load()
+            Booking()
         else:
             print("Invalid Input!")
             time.sleep(3)
@@ -997,7 +1055,7 @@ def BookingHist(name, service, price, time):#Funtion to display the Bookings His
     fileWrite("bustle_files/bookings",hist)
     print("\t\t\tBooking history")
     print(f"\nUser:{user}\n")
-    order = list(zip(x,y,z,p))
+    order = list(zip(x,y,p,z))
     l = ["Service","Name","Amount paid","Time of booking"]
     order.insert(0,l)
     print(tabulate(order, headers = "firstrow", tablefmt = "fancy_grid", showindex = range(1,len(order))))
