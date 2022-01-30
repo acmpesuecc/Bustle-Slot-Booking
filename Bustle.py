@@ -1,10 +1,10 @@
-from calendar import c
 import pickle #To write in dictionary
-import os #Using to clear screen using defined clear() function
+import os#Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
 from tabulate import tabulate#Used to display a table
 from copy import deepcopy#Used to create new voucher values with different references
+import re #Used to evaluate regex
 import pdb
 clear = lambda: os.system('cls')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
@@ -142,6 +142,22 @@ def load():#Function to display loading screen
     print("Loading.");time.sleep(0.5);clear()
     print("Loading..");time.sleep(0.5);clear()
     print("Loading...");time.sleep(0.5);clear()
+def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
+    if ctype=='1':
+        if ccomp=='1':
+            pattern="^5[1-5][0-9]{14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)[0-9]{12}$"
+        elif ccomp=='2':
+            pattern="^4[0-9]{12}(?:[0-9]{3})?$"
+    elif ctype=='2':
+        if ccomp=='1':
+            pattern="^5[1-5][0-9]{14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)[0-9]{12}$"
+        elif ccomp=='2':
+            pattern="^4[0-9]{12}(?:[0-9]{3})?$"
+        p=re.compile(pattern)
+    if(re.search(p,cnumber)):
+        return True
+    else:
+        return False
 def settings():#Funtion for settings page
     clear()
     global user
@@ -924,11 +940,14 @@ def checkout(): #Checkout page
     clear()
     load()
     while True:
-        pchoice = int(input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n"))
-        if pchoice == 1:
+        #pdb.set_trace()
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n")
+        if pchoice == '1':
             while True:
+                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n")
+                clear()
                 dcn = input("Enter Debit Card number:")
-                if len(dcn) == 16:
+                if CardVerify(dcn,pchoice,cardchoice):
                     dcna = input("Enter Name of card holder:")
                     exp = input("Enter card expiry date:")
                     cvv = input("Enter cvv:")
@@ -937,10 +956,12 @@ def checkout(): #Checkout page
                     print("Invalid Debit Card number!")
                     time.sleep(3)
                     clear()
-        elif pchoice == 2:
+        elif pchoice == '2':
             while True:
+                cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n")
+                clear()
                 ccn = input("Enter Credit Card number:")
-                if len(ccn) == 16:
+                if CardVerify(ccn,pchoice,cardchoice):
                     ccna = input("Enter Name of card holder:")
                     exp = input("Enter card expiry date:")
                     cvv = input("Enter cvv:")
