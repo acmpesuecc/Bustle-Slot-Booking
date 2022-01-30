@@ -93,7 +93,7 @@ def vouchdisc(price):
     global user
     price=int(price)
     ynchoice=input("Would you like to see the list of available vouchers?(y/n)\n")
-    if ynchoice=='y':
+    if ynchoice=='y' and price>100:
         vfile=fileRead("bustle_files/vouchers")
         vcodes=[]
         vdesc=[]
@@ -113,14 +113,23 @@ def vouchdisc(price):
                 i=vfile[user+'e'][0].index(vchoice)
                 vfile[user+'e'][3][i]=int(vfile[user+'e'][3][i])-1
                 discexp=vfile["admine"][4][i]
-                price=eval(discexp)
-                return price
+                if eval(discexp)>=100:
+                    price=eval(discexp)
+                    return price 
+                else:
+                    print("This voucher cannot be applied on the current transaction!")
+                    time.sleep(2)
+                    clear()
+                    return 0
             elif vchoice=='c':
                 return 0
             else:
                 print("Invalid Input, Reinitializing page...")
                 time.sleep(2)
                 clear()
+    elif ynchoice=='y' and price<=100:
+        print("Voucher cannot be applied on the current transaction!")
+        return -1
     elif ynchoice=='n':
         return -1
     else:
