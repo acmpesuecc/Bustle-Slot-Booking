@@ -436,7 +436,6 @@ def admin():#Function to allow admin to manage the program
                     clear()
             for user in fileRead("bustle_files/UserAcc"):
                 if user in vfile:
-                    print(vfile)
                     vfile[user][0].append(vcode)#list of all voucher codes
                     vfile[user][1].append(vdesc)#list of all voucher descriptions
                     vfile[user][2].append(vscore)#list of all costs
@@ -527,7 +526,7 @@ def admin():#Function to allow admin to manage the program
                     print("User deleted!")
                     time.sleep(2)
                     clear()
-                    break
+                    admin()
                 elif usnchoice=='c':
                     clear()
                     break
@@ -551,7 +550,7 @@ def games():#Function to display and launch games
     global user
     accounts=fileRead("bustle_files/UserAcc")
     print("Which game would you like to play?\n")
-    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)#Tic-Tac-Toe#(Coming Soon...)\n4)Back\n")
+    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Points Distribution\n7)Back\n")
     if gchoice =='1':
         exec(open("game_files/snake.py").read())
         with open("tempscore","r") as file:
@@ -567,14 +566,44 @@ def games():#Function to display and launch games
         with open("tempscore","r") as file:
             score=int(file.read())
         os.remove("tempscore")
+        score=score/10
         accounts[user+'e'][1]+=int(score)
         fileWrite("bustle_files/UserAcc",accounts)
         print(f"Your Final Score was: {score}")
         time.sleep(2)
     elif gchoice =='3':
-        exec(open("").read())
+        exec(open("game_files/tictactoe/TictacToe.py").read())
     elif gchoice=='4':
+        exec(open("game_files/sudoku/GUI.py").read())
+        with open("tempscore","r") as file:
+            score=int(file.read())
+        os.remove("tempscore")
+        accounts[user+'e'][1]+=int(score)
+        fileWrite("bustle_files/UserAcc",accounts)
+        print(f"Your Final Score was: {score}")
+        time.sleep(2)
+    elif gchoice=='5':
+        exec(open("game_files/trivia/BUSTLEQUIZ.py").read())
+        clear()
+        with open("tempscore","r") as file:
+            score=int(file.read())
+        os.remove("tempscore")
+        accounts[user+'e'][1]+=int(score)
+        fileWrite("bustle_files/UserAcc",accounts)
+        print(f"Your Final Score was: {score}")
+        time.sleep(2)
+    elif gchoice=='6':
+        clear()
+        data =list(zip(["Snake!","Bustle Tetris","Impossible Tic-Tac-Toe!","Sudoku","Trivia!"],["0.5 Bustle Points for every Game point after 10","1 Bustle point for every row cleared","100 Bustle points for winning against computer","10 Bustle points for clearing boaard","1 Bustle point for every correct answer"]))
+        print(tabulate(data, headers=["Game","Points Awarded"], tablefmt = "fancy_grid"))
+        input("\nPress any key to go back")
+    elif gchoice=='7':
         home()
+    else:
+        print("Invalid Input. Reinitializing page...")
+        time.sleep(2)
+        clear()
+        games()
     home()
 def login(): #Checks and logs in user
     clear()
