@@ -340,9 +340,9 @@ def admin():#Function to allow admin to manage the program
                 try:
                     if mastchoice2=='5':
                         nptype='cycle'
-                        npname,npexp=input("Enter Name/Experience\n").split('/')
+                        npname,npexp,npprice=input("Enter Name/Experience/Price\n").split('/')
                     else:
-                        npname,nptype,npexp=input("Enter Name/Expertise/Experience\n").split('/')
+                        npname,nptype,npexp,npprice=input("Enter Name/Expertise/Experience/Price\n").split('/')
                 except:
                     print("Incorrect number of inputs received")
                     time.sleep(3)
@@ -353,7 +353,7 @@ def admin():#Function to allow admin to manage the program
                     if ynchoice=='n':
                         admin()
                 else:
-                    service.update({npname:[npexp,nptype]})
+                    service.update({npname:[npexp,nptype,npprice]})
                     break
             fileWrite(f"bustle_files/{tempname+'s'}/{tempname}",service)
             clear()
@@ -732,14 +732,23 @@ def menu():#Starting page of the program
             time.sleep(3)
             clear()
 def Booking(): #Bookings page
-    bchoice = input("Which service would you like to book?\n1.Restaurant\n2.Hotel\n3.Bus\n4.Cycle Repair\n5.Spa\n")
+    bchoice = input("Which service would you like to book?\n1)Restaurant\n2)Hotel\n3)Cycle Repair\n4)Spa\n5)Back\n")
     if bchoice == '1':
         Restaurant()
     elif bchoice == '2':
         Hotel()
-    else:
+    elif bchoice == '3':
+        Cycle_Repair()
+    elif bchoice == '4':
+        SPA()
+    elif bchoice == '5':
         clear()
         home()
+    else:
+        print("Invalid Input!")
+        time.sleep(3)
+        clear()
+        Booking()
 def Restaurant(): #Choosing Restaurants
     from datetime import datetime
     try:
@@ -969,6 +978,236 @@ def Hotel():#Funtion to book hotels
         print("\nPlease give a valid hotel name!")
         time.sleep(3)
         Hotel()
+def SPA(): #Function for SPA bookings
+    from datetime import datetime
+    try:
+        fileRead("bustle_files/spas/spa")
+    except:
+        clear()
+        print("Error 404: Page not found")
+        time.sleep(3)
+        Booking()
+    name = 'SPA'
+    hist = ''
+    clear()
+    services = []
+    slots = fileRead("bustle_files/spas/spa")
+    for key in slots:
+        if slots[key][1] not in services:
+            services.append(slots[key][1])
+    while True:
+        print("Which SPA service would you like to book")
+        for service in services:
+            print(service)
+        print("(Press 'c' to go back)")
+        schoice = input()
+        if schoice in services:
+            while True:
+                flag = 0
+                print("\nList of providers:")
+                for key in slots:
+                    if slots[key][1] == schoice and key.endswith('a'):
+                        print(f"Name: {key[:-1]}, Experience: {slots[key][0]}, Availability = Available")
+                    elif slots[key][1] == schoice and key.endswith('b'):
+                        print(f"Name: {key[:-1]}, Experience: {slots[key][0]}, Availability = Booked")
+                pchoice = input("\nWhich provider would you like to book (Press 'c' to go back)?\n").strip()
+                if pchoice == 'c':
+                    clear()
+                    SPA()
+                else:
+                    for key in slots:
+                        if key[:-1] == pchoice:
+                            if key.endswith('a'):
+                                avail = True
+                                flag = 0
+                            elif key.endswith('b'):
+                                avail = False
+                                flag = 0
+                            break
+                        else:
+                            flag += 1 
+                    if flag == 0 and avail == True:
+                        while True:
+                            try:
+                                th,tm = input("Enter time at which you wish for the provider to arrive(hh/mm):\n").split(":")
+                            except:
+                                print("Invalid time entry!(hh:mm)")
+                                time.sleep(3)
+                                clear()
+                                continue
+                            if th.isdigit() and tm.isdigit():
+                                price = slots[pchoice+'a'][2]
+                                clear()
+                                print(f"Type of service: {schoice}")
+                                print(f"Name of provider: {pchoice}")
+                                print(f"Timing: {th}:{tm}")
+                                print(f"Price: {price}")
+                                ychoice = input("\nDo you wish to proceed to checkout?(y/n):\n")
+                                if ychoice == 'y':
+                                    clear()
+                                    load()
+                                    n=0
+                                    while True:
+                                        print("Type of service:",schoice)
+                                        print("Provider name:",pchoice)
+                                        print("Total price:",price)
+                                        print(f"{n} vouchers applied!")
+                                        check=vouchdisc(price)
+                                        if check==-1:
+                                            break
+                                        elif check==0:
+                                            continue
+                                        else:
+                                            price=check
+                                            n+=1
+                                    cchoice = input("\nDo you wish to continue?(y/n)\n")
+                                    if cchoice == 'y':
+                                        if checkout():
+                                            print("Payment successful")
+                                            hist = schoice + "-" + pchoice
+                                            slots[pchoice +'b'] = slots[pchoice +'a']
+                                            del slots[pchoice + 'a']
+                                            fileWrite("bustle_files/spas/spa",slots)
+                                            time.sleep(3)
+                                            now = datetime.now()
+                                            clear()
+                                            BookingHist(name,hist,price,now)
+                                        else:
+                                            print("Payment Failed!")
+                                            SPA()
+                                    elif cchoice == 'n':
+                                        clear()
+                                        SPA()
+                                if ychoice == 'n':
+                                    clear()
+                                    SPA()
+                            else:
+                                print("Invalid time entry!(hh:mm)")
+                                time.sleep(3)
+                                clear()
+                                continue
+                    elif flag == 0 and avail == False:
+                        print("Provider Unavailable!")
+                        time.sleep(3)
+                        clear()
+                        SPA()
+                    else:
+                        print("Provider input invalid!")
+                        time.sleep(3)
+                        clear()
+                        continue
+        elif schoice == 'c':
+            clear()
+            Booking()
+        else:
+            print("Invalid input!")
+            time.sleep(3)
+            clear()
+def Cycle_Repair():
+    from datetime import datetime
+    try:
+        fileRead("bustle_files/cycles/cycle")
+    except:
+        clear()
+        print("Error 404: Page not found")
+        time.sleep(3)
+        Booking()
+    name = 'Cycle Repair'
+    clear()
+    slots = fileRead("bustle_files/cycles/cycle")
+    while True:
+        print("List of providers:")
+        for key in slots:
+            if key.endswith('a'):
+                print(f"Name:{key[:-1]}, Experience:{slots[key][0]}, Availability: Available")
+            else:
+                print(f"Name:{key[:-1]}, Experience:{slots[key][0]}, Availability: Booked")
+        pchoice = input("\nWhich provider would you like to book (Press 'c' to go back)?\n").strip()
+        flag = 0
+        if pchoice == 'c':
+            clear()
+            Booking()
+        else:
+            for key in slots:
+                if key[:-1] == pchoice:
+                    if key.endswith('a'):
+                        avail = True
+                        flag = 0
+                    elif key.endswith('b'):
+                        avail = False
+                        flag = 0
+                    break
+                else:
+                    flag += 1 
+            if flag == 0 and avail == True:
+                while True:
+                    try:
+                        th,tm = input("Enter time at which you wish for the provider to arrive(hh/mm):\n").split(":")
+                    except:
+                        print("Invalid time entry!(hh:mm)")
+                        time.sleep(3)
+                        clear()
+                        continue
+                    if th.isdigit() and tm.isdigit():
+                        price = slots[pchoice+'a'][2]
+                        clear()
+                        print(f"Type of service: Bicycle Repair")
+                        print(f"Name of provider: {pchoice}")
+                        print(f"Timing: {th}:{tm}")
+                        print(f"Price: {price}")
+                        ychoice = input("\nDo you wish to proceed to checkout?(y/n):\n")
+                        if ychoice == 'y':
+                            clear()
+                            load()
+                            n=0
+                            while True:
+                                print("Type of service: Bicycle Repair")
+                                print("Provider name:",pchoice)
+                                print("Total price:",price)
+                                print(f"{n} vouchers applied!")
+                                check=vouchdisc(price)
+                                if check==-1:
+                                    break
+                                elif check==0:
+                                    continue
+                                else:
+                                    price=check
+                                    n+=1
+                            cchoice = input("\nDo you wish to continue?(y/n)\n")
+                            if cchoice == 'y':
+                                if checkout():
+                                    print("Payment successful")
+                                    slots[pchoice +'b'] = slots[pchoice +'a']
+                                    del slots[pchoice + 'a']
+                                    fileWrite("bustle_files/cycles/cycle",slots)
+                                    time.sleep(3)
+                                    now = datetime.now()
+                                    clear()
+                                    BookingHist(name,pchoice,price,now)
+                                else:
+                                    print("Payment Failed!")
+                                    Cycle_Repair()
+                            elif cchoice == 'n':
+                                clear()
+                                Cycle_Repair()
+                        if ychoice == 'n':
+                            clear()
+                            Cycle_Repair()
+                    else:
+                        print("Invalid time entry!(hh:mm)")
+                        time.sleep(3)
+                        clear()
+                        continue
+            elif flag == 0 and avail == False:
+                print("Provider Unavailable!")
+                time.sleep(3)
+                clear()
+                Cycle_Repair()
+            else:
+                print("Provider input invalid!")
+                time.sleep(3)
+                clear()
+                continue
 def checkout(): #Checkout page
     clear()
     load()
