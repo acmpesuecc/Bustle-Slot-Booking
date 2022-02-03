@@ -29,17 +29,31 @@ def setpass(usnID,score):#Function to set the password and security question
     while True:
         pass2=input("Confirm password:\n")
         if pass2==pass1:
-            sq=input("Enter your Security Question:\n")
-            sa=input("Enter the answer for your Security Question:\nWARNING: Give an answer you can remember. You will need these in case you have to reset your account password!\n")
-            accounts.update({usnID:[pass1,score,sq,sa]})
-            fileWrite('bustle_files/UserAcc',accounts)
-            return 
+            while True:
+                sq=input("Enter your Security Question(Minimum of 5 characters ending with a '?'):\n")
+                if len(sq) >= 6 and sq.endswith('?'):
+                    sa=input("Enter the answer for your Security Question:\nWARNING: Give an answer you can remember. You will need these in case you have to reset your account password!\n")
+                    accounts.update({usnID:[pass1,score,sq,sa]})
+                    fileWrite('bustle_files/UserAcc',accounts)
+                    return 
+                else:
+                    print("Enter a valid security question!(Min 5 characters ending with a '?')")
+                    time.sleep(3)
+                    clear()
+                    continue
         else:
             print("Oops password doesn't match! Try again:")
 def register(): #Function to add new user account  
-    usn=input("Enter a username:\n")    
-    usn=usn.strip()
-    usn=usn+'e'
+    while True:
+        usn=input("Enter a username(Minimum of 5 characters without special characters):\n")    
+        usn=usn.strip()
+        if len(usn) >= 5 and usn.isalnum():
+            usn=usn+'e'
+            break
+        else:
+            print("Enter a valid username!(Min 5 characters without special characters)")
+            time.sleep(3)
+            clear()
     accounts=fileRead("bustle_files/UserAcc")
     if usn in accounts:
         print("Account already exists!")
@@ -263,8 +277,10 @@ def settings():#Funtion for settings page
             menu()
     elif setchoice=='5':
         clear()
-        print("we gae lol")
-        time.sleep(3)
+        print("Team bustle is a group of persistant, hard working and perfectionist coders.")
+        print("Project Bustle, our very first project, is an intuitive slot booking and management software that ensures your time and efforts saved")
+        print("Members: Harsh Somvanshi, Harini Anand and Bhaskarla Sri Saahith")
+        time.sleep(4)
         settings()
     elif setchoice=='6':
         clear()
@@ -279,8 +295,8 @@ def admin():#Function to allow admin to manage the program
     clear()
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage Vouchers\n4)Manage User Accounts\n5)Logout\n")
     if mastchoice1=='1':
-        mastchoice2=input("Choose a category to add to: \n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n")#Add other services here
-        if mastchoice2=='1' or mastchoice2=='2' or mastchoice2=='3':
+        mastchoice2=input("Choose a category to add to: \n1)Restaurant\n2)Hotel\n3)Spa\n4)Bicycle Repair\n5)Back\n")#Add other services here
+        if mastchoice2=='1' or mastchoice2=='2':
             if mastchoice2=='1':
                 tempname="restaurant"
                 try:
@@ -295,13 +311,13 @@ def admin():#Function to allow admin to manage the program
                 except:
                     fileWrite(f"bustle_files/hotels/{tempname}",{})
                     service=fileRead(f"bustle_files/hotels/{tempname}")
-            elif mastchoice2=='3':
+            '''elif mastchoice2=='3':
                 tempname="bus"
                 try:
                     service=fileRead(f"bustle_files/buss/{tempname}")
                 except:
                     fileWrite(f"bustle_files/buss/{tempname}",{})
-                    service=fileRead(f"bustle_files/buss/{tempname}")
+                    service=fileRead(f"bustle_files/buss/{tempname}")'''
             while True:
                 try:
                     npname,npseat,npprice=input("Enter Name/Available Slots/Price\n").split('/')
@@ -321,15 +337,15 @@ def admin():#Function to allow admin to manage the program
             print("Provider successfully added!")
             time.sleep(3)
             admin()
-        elif mastchoice2=='4' or mastchoice2=='5':
-            if mastchoice2=='4':
+        elif mastchoice2=='3' or mastchoice2=='4':
+            if mastchoice2=='3':
                 tempname="spa"
                 try:
                     service=fileRead(f"bustle_files/spas/{tempname}")
                 except:
                     fileWrite(f"bustle_files/spas/{tempname}",{})
                     service=fileRead(f"bustle_files/spas/{tempname}")
-            elif mastchoice2=='5':
+            elif mastchoice2=='4':
                 tempname="cycle"
                 try:
                     service=fileRead(f"bustle_files/cycles/{tempname}")
@@ -338,7 +354,7 @@ def admin():#Function to allow admin to manage the program
                     service=fileRead(f"bustle_files/cycles/{tempname}")
             while True:
                 try:
-                    if mastchoice2=='5':
+                    if mastchoice2=='4':
                         nptype='cycle'
                         npname,npexp,npprice=input("Enter Name/Experience/Price\n").split('/')
                     else:
@@ -360,7 +376,7 @@ def admin():#Function to allow admin to manage the program
             print("Provider successfully added!")
             time.sleep(3)
             admin()
-        elif mastchoice2=='6':
+        elif mastchoice2=='5':
             clear()
             admin()
         else:
@@ -370,18 +386,18 @@ def admin():#Function to allow admin to manage the program
             admin()
     elif mastchoice1=='2':
         while True:
-            mastchoice2=input("Choose a category to delete from:\n1)Restaurant\n2)Hotel\n3)Bus\n4)Spa\n5)Bicycle Repair\n6)Back\n")#Add other services here
+            mastchoice2=input("Choose a category to delete from:\n1)Restaurant\n2)Hotel\n3)Spa\n4)Bicycle Repair\n5)Back\n")#Add other services here
             if mastchoice2=='1':
                 tempname="restaurant"
             elif mastchoice2=='2':
                 tempname="hotel"
+            #elif mastchoice2=='3':
+                #tempname="bus"
             elif mastchoice2=='3':
-                tempname="bus"
-            elif mastchoice2=='4':
                 tempname="spa"
-            elif mastchoice2=='5':
+            elif mastchoice2=='4':
                 tempname="cycle"
-            elif mastchoice2=='6':
+            elif mastchoice2=='5':
                 admin()
             else:
                 print("Invalid input! Reinitializing page..")
@@ -394,7 +410,7 @@ def admin():#Function to allow admin to manage the program
                     for key in service:
                      print(key)
                 else:
-                    ynchoice=input("No providers available for this category yet. Would you like to add a provder instead?(y/n)\n")
+                    ynchoice=input("No providers available for this category yet. Would you like to add a provider instead?(y/n)\n")
                     if ynchoice=='y':
                         clear()
                         admin()
@@ -1035,7 +1051,7 @@ def SPA(): #Function for SPA bookings
                                 time.sleep(3)
                                 clear()
                                 continue
-                            if th.isdigit() and tm.isdigit():
+                            if th.isdigit() and tm.isdigit() and int(th) <= 23 and int(tm) <=59 and int(th) >= 0 and int(tm) >= 0:
                                 price = slots[pchoice+'a'][2]
                                 clear()
                                 print(f"Type of service: {schoice}")
@@ -1148,7 +1164,7 @@ def Cycle_Repair():
                         time.sleep(3)
                         clear()
                         continue
-                    if th.isdigit() and tm.isdigit():
+                    if th.isdigit() and tm.isdigit() and int(th) <= 23 and int(tm) <= 59 and int(th) >= 0 and int(tm) >= 0:
                         price = slots[pchoice+'a'][2]
                         clear()
                         print(f"Type of service: Bicycle Repair")
@@ -1300,7 +1316,7 @@ def checkout(): #Checkout page
             print("Invalid Input!")
             time.sleep(3)
             clear()
-def BookingHist(name, service, price, time):#Funtion to display the Bookings History page
+def BookingHist(name, service, price, time1):#Funtion to display the Bookings History page
     global user
     a = {}
     try:
@@ -1314,11 +1330,11 @@ def BookingHist(name, service, price, time):#Funtion to display the Bookings His
     y = hist[user][0]
     p = hist[user][2]
     z = hist[user][3]
-    if name != None and service != None and price != None and time != None:
+    if name != None and service != None and price != None and time1 != None:
         x.append(name)
         y.append(service)
         p.append(price)
-        z.append(time)
+        z.append(time1)
         hist.update({user:(y,x,p,z)})
     fileWrite("bustle_files/bookings",hist)
     print("\t\t\tBooking history")
@@ -1330,4 +1346,9 @@ def BookingHist(name, service, price, time):#Funtion to display the Bookings His
     bchoice = input("\n(Press 'c' to go back)\n")
     if bchoice == 'c':
         home()
+    else:
+        print("Invalid input!")
+        time.sleep(3)
+        clear()
+        BookingHist(None,None,None,None)
 menu()#Starts Execution here
