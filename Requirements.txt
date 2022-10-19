@@ -1,0 +1,6 @@
+Make sure to `pip install` the following dependencies!
+
+  -stdiomask
+  -pygame
+  -tabulate
+  -
