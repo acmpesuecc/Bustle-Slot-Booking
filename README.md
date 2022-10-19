@@ -19,7 +19,7 @@ python Bustle.py
 So you're the one the prophecies spoke of? The one that will help transform our unfinished code into a full fledged program? You're in the right place..
 Walk through [✨this door✨](/CONTRIBUTING.md) and you shall be briefed on how to contribute to the cause. 
  
->This repository is maintained by [Typeaway14](https://github.com/Typeaway14). A follow is appreciated :)
+>This repository is maintained by [Typeaway14](https://github.com/Typeaway14) and [mukunddeepak](https://github.com/mukunddeepak). A follow is appreciated :)
 
 
 
