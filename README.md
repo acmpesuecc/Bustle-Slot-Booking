@@ -1,6 +1,6 @@
 # Bustle-Slot-Booking
 
-Bustle is a slot booking system that was developed as part of the Sem-I project by Saahith1204, inirah02 and Typeaway14. What makes it extra fun? Bustle has games built in which can help you earn point and get discount vouchers for your future purchases B)
+Bustle is a slot booking system. What makes it extra fun? Bustle has games built in which can help you earn point and get discount vouchers for your future purchases B)
 
 ## Get Started
 Wanna use Bustle for yourself?
