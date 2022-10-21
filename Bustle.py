@@ -1,6 +1,5 @@
 import climage #For displaying images in the command line
 import pyqrcode #For generating a QR code
-import png #For handling PNG images
 from pyqrcode import QRCode #For QR code
 import pickle #To write in dictionary
 import os#Using to clear screen using defined clear() function

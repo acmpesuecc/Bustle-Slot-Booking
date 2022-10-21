@@ -3,4 +3,3 @@ pygame
 tabulate
 climage
 pyqrcode
-png
