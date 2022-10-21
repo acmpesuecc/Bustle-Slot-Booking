@@ -1,20 +1,29 @@
 import pickle #To write in dictionary
-import os#Using to clear screen using defined clear() function
+import os
+from random import sample#Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
 import stdiomask #used to accept password without showing characters
 from tabulate import tabulate#Used to display a table
 from copy import deepcopy#Used to create new voucher values with different references
 import re #Used to evaluate regex
 import pdb
+import pyqrcode
+
 clear = lambda: os.system('cls|clear')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
+
+
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
         pickle.dump(data,file)
+
+
 def fileRead(filename):#Universal function to read any mentioned file
     with open(filename,'rb') as file:
          data=pickle.load(file)
          return data
+
+
 def logout():#Function to display logout screen
     clear()
     print("Logging out");time.sleep(0.5);clear()
@@ -22,6 +31,8 @@ def logout():#Function to display logout screen
     print("Logging out..");time.sleep(0.5);clear()
     print("Logging out...");time.sleep(0.5);clear()
     login()
+
+
 def setpass(usnID,score):#Function to set the password and security question
     accounts=fileRead("bustle_files/UserAcc")
     pass1=input("Enter a password:\n")
@@ -43,6 +54,8 @@ def setpass(usnID,score):#Function to set the password and security question
                     continue
         else:
             print("Oops password doesn't match! Try again:")
+
+
 def register(): #Function to add new user account  
     while True:
         usn=input("Enter a username(Minimum of 5 characters without special characters):\n")    
@@ -65,6 +78,8 @@ def register(): #Function to add new user account
         vdata.update({usn:vdatacopy})
         fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
+
+
 def voucher():#Function to display and purchase vouchers
     vfile=fileRead("bustle_files/vouchers")
     accounts=fileRead("bustle_files/UserAcc")
@@ -103,6 +118,8 @@ def voucher():#Function to display and purchase vouchers
         clear()
         voucher()
     home()
+
+
 def vouchdisc(price):
     global user
     price=int(price)
@@ -151,11 +168,15 @@ def vouchdisc(price):
         time.sleep(2)
         clear()
         return 0
+
+
 def load():#Function to display loading screen
     print("Loading");time.sleep(0.5);clear()
     print("Loading.");time.sleep(0.5);clear()
     print("Loading..");time.sleep(0.5);clear()
     print("Loading...");time.sleep(0.5);clear()
+
+
 def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
     if ctype=='1':
         if ccomp=='1':
@@ -176,6 +197,8 @@ def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
         return True
     else:
         return False
+
+
 def settings():#Funtion for settings page
     clear()
     global user
@@ -289,6 +312,8 @@ def settings():#Funtion for settings page
         print("Invalid Input. Reinitializing page...")
         time.sleep(2)
         settings()
+
+
 def admin():#Function to allow admin to manage the program
     adminpass=fileRead("bustle_files/UserAcc")
     adminpass=adminpass["admine"]
@@ -562,6 +587,8 @@ def admin():#Function to allow admin to manage the program
         print("Invalid Input! Reinitializing page...")
         time.sleep(3)
         admin()
+
+
 def games():#Function to display and launch games
     global user
     accounts=fileRead("bustle_files/UserAcc")
@@ -624,6 +651,8 @@ def games():#Function to display and launch games
         clear()
         games()
     home()
+
+
 def login(): #Checks and logs in user
     clear()
     n=5
@@ -695,6 +724,8 @@ def login(): #Checks and logs in user
         print("This user doesn't exist!")
         time.sleep(3)
         login()
+
+
 def home():#Home page
     clear()
     homechoice=input("What would you like to do today?\n1)Make a Booking\n2)Booking History\n3)Vouchers\n4)Games\n5)Settings\n6)Logout\n")
@@ -721,6 +752,8 @@ def home():#Home page
         print("Invalid Input")
         time.sleep(2)
         home()
+
+
 def menu():#Starting page of the program
     try: 
         fileRead("bustle_files/UserAcc")
@@ -750,6 +783,8 @@ def menu():#Starting page of the program
             print("Invalid Input")
             time.sleep(3)
             clear()
+
+
 def Booking(): #Bookings page
     bchoice = input("Which service would you like to book?\n1)Restaurant\n2)Hotel\n3)Cycle Repair\n4)Spa\n5)Back\n")
     if bchoice == '1':
@@ -1122,6 +1157,8 @@ def SPA(): #Function for SPA bookings
             print("Invalid input!")
             time.sleep(3)
             clear()
+
+
 def Cycle_Repair():
     from datetime import datetime
     try:
@@ -1227,12 +1264,14 @@ def Cycle_Repair():
                 time.sleep(3)
                 clear()
                 continue
+
+
 def checkout(): #Checkout page
     clear()
     load()
     while True:
         #pdb.set_trace()
-        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.Back\n")
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3. UPI\n4.Back\n")
         if pchoice == '1':
             while True:
                 cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
@@ -1311,7 +1350,13 @@ def checkout(): #Checkout page
                 else:
                     clear()
                     checkout()
-        elif pchoice == '3':
+        #uses pyqrcode to generate a QR code for a given UPI id nad saves it as a png file            
+        elif pchoice=="3":
+            sample_upi = "myupiid12345@icici" #sample upi id
+            upi_qr = pyqrcode.create(sample_upi)
+            upi_qr.png("upi_payment.png", scale=8)
+        
+        elif pchoice == '4':
             clear()
             load()
             Booking()
