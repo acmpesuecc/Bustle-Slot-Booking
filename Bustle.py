@@ -1,3 +1,6 @@
+from PIL import Image  #For displaying images in the terminal itself
+import pyqrcode #For generating QR code's in python
+from pyqrcode import QRCode #QR code module
 import pickle #To write in dictionary
 import os
 from random import sample#Using to clear screen using defined clear() function
@@ -1359,6 +1362,18 @@ def checkout(): #Checkout page
             upi_qr = pyqrcode.create(sample_upi)
             upi_qr.png("upi_payment.png", scale=8)
         
+        elif pchoice == '4':
+            clear()
+            print("You have chosen to pay through UPI option")
+            print("Below is the QR code which you should scan using the UPI app of your choice")
+            s = "The link to the UPI payment"
+            url = pyqrcode.create(s)
+            url.png("payment.png", scale = 3)
+            img = Image.open('payment.png')
+            img.show()
+            print("You have 50 seconds to scan this QR code for security purpouses")
+            time.sleep(5)
+            checkout()
         elif pchoice == '4':
             clear()
             load()

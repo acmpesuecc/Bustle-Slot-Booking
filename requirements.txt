@@ -1,3 +1,7 @@
 stdiomask
 pygame
 tabulate
+climage
+pyqrcode
+Pillow
+pypng
