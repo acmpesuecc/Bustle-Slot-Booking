@@ -618,7 +618,7 @@ def games():#Function to display and launch games
         input("\nPress any key to go back")
     elif gchoice=='7':
         exec(open("game_files/memorygame.py").read())
-         input("\nPress any key to go back")
+        input("\nPress any key to go back")
     elif gchoice=='8':
         home()
     else:
