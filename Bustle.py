@@ -1,4 +1,4 @@
-import climage #For displaying images in the terminal itself
+from PIL import Image  #For displaying images in the terminal itself
 import pyqrcode #For generating QR code's in python
 from pyqrcode import QRCode #QR code module
 import pickle #To write in dictionary
@@ -1322,9 +1322,9 @@ def checkout(): #Checkout page
             print("Below is the QR code which you should scan using the UPI app of your choice")
             s = "The link to the UPI payment"
             url = pyqrcode.create(s)
-            url.png("payment.png", scale = 6)
-            out = climage.convert("payment.png")
-            print(out)
+            url.png("payment.png", scale = 3)
+            img = Image.open('payment.png')
+            img.show()
             print("You have 50 seconds to scan this QR code for security purpouses")
             time.sleep(5)
             checkout()
