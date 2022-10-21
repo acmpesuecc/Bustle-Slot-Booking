@@ -7,6 +7,7 @@ from copy import deepcopy#Used to create new voucher values with different refer
 import re #Used to evaluate regex
 import pdb
 clear = lambda: os.system('cls|clear')#Lambda function to clear the screen
+clear = lambda: os.system('cls')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
