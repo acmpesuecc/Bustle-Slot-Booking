@@ -592,7 +592,10 @@ def games():#Function to display and launch games
     elif gchoice=='4':
         exec(open("game_files/sudoku/GUI.py").read())
         with open("tempscore","r") as file:
-            score=int(file.read())
+            if not file.read() == "None":
+                score=int(file.read())
+            else:
+                score=0
         os.remove("tempscore")
         accounts[user+'e'][1]+=int(score)
         fileWrite("bustle_files/UserAcc",accounts)
