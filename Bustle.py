@@ -1232,7 +1232,7 @@ def checkout(): #Checkout page
     load()
     while True:
         #pdb.set_trace()
-        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.Back\n")
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.UPI")
         if pchoice == '1':
             while True:
                 cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
@@ -1311,10 +1311,14 @@ def checkout(): #Checkout page
                 else:
                     clear()
                     checkout()
+#UPI payment option added here........................................
         elif pchoice == '3':
-            clear()
-            load()
-            Booking()
+            while True:
+                import qrcode
+                img = qrcode.make("QR Code for payment thru UPI")
+                time.sleep(3)
+                print(img)
+                clear()
         else:
             print("Invalid Input!")
             time.sleep(3)
