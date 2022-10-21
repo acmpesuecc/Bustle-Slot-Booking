@@ -4,3 +4,4 @@ tabulate
 climage
 pyqrcode
 Pillow
+pypng
