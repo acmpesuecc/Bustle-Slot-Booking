@@ -612,12 +612,21 @@ def games():#Function to display and launch games
         fileWrite("bustle_files/UserAcc",accounts)
         print(f"Your Final Score was: {score}")
         time.sleep(2)
-    elif gchoice=='6':
+    elif gchoice =='6':
+        exec(open("game_files/eggcatcher.py").read())
+        with open("tempscore","r") as file:
+            score=int(file.read())
+        os.remove("tempscore")
+        if score>10:
+            accounts[user+'e'][1]+=int((score-10)/2)
+        fileWrite("bustle_files/UserAcc",accounts)
+        time.sleep(2)
+    elif gchoice=='7':
         clear()
-        data =list(zip(["Snake!","Bustle Tetris","Impossible Tic-Tac-Toe!","Sudoku","Trivia!"],["0.5 Bustle Points for every Game point after 10","1 Bustle point for every row cleared","100 Bustle points for winning against computer","10 Bustle points for clearing boaard","1 Bustle point for every correct answer"]))
+        data =list(zip(["Snake!","Bustle Tetris","Impossible Tic-Tac-Toe!","Sudoku","Trivia!", "eggcatcher"],["0.5 Bustle Points for every Game point after 10","1 Bustle point for every row cleared","100 Bustle points for winning against computer","10 Bustle points for clearing boaard","1 Bustle point for every correct answer"]))
         print(tabulate(data, headers=["Game","Points Awarded"], tablefmt = "fancy_grid"))
         input("\nPress any key to go back")
-    elif gchoice=='7':
+    elif gchoice=='8':
         home()
     else:
         print("Invalid Input. Reinitializing page...")
