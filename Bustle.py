@@ -1,3 +1,6 @@
+import climage #For displaying images in the terminal itself
+import pyqrcode #For generating QR code's in python
+from pyqrcode import QRCode #QR code module
 import pickle #To write in dictionary
 import os#Using to clear screen using defined clear() function
 import time #Slow down execution using sleep()
@@ -1227,12 +1230,14 @@ def Cycle_Repair():
                 time.sleep(3)
                 clear()
                 continue
+
+
 def checkout(): #Checkout page
     clear()
     load()
     while True:
         #pdb.set_trace()
-        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.Back\n")
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.UPI\n4.Back")
         if pchoice == '1':
             while True:
                 cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
@@ -1312,6 +1317,18 @@ def checkout(): #Checkout page
                     clear()
                     checkout()
         elif pchoice == '3':
+            clear()
+            print("You have chosen to pay through UPI option")
+            print("Below is the QR code which you should scan using the UPI app of your choice")
+            s = "The link to the UPI payment"
+            url = pyqrcode.create(s)
+            url.png("payment.png", scale = 6)
+            out = climage.convert("payment.png")
+            print(out)
+            print("You have 50 seconds to scan this QR code for security purpouses")
+            time.sleep(5)
+            checkout()
+        elif pchoice == '4':
             clear()
             load()
             Booking()
