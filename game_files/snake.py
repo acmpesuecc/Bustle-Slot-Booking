@@ -102,7 +102,7 @@ def main():
             if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
                 return True
             # hits itself
-            if (self.head in self.snake[1:]) and (self.head != self.snake[0]):
+            if self.head in self.snake[1:]:
                 return True
             
             return False
