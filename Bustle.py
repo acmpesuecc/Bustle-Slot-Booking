@@ -6,7 +6,7 @@ from tabulate import tabulate#Used to display a table
 from copy import deepcopy#Used to create new voucher values with different references
 import re #Used to evaluate regex
 import pdb
-clear = lambda: os.system('cls')#Lambda function to clear the screen
+clear = lambda: os.system('cls|clear')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
@@ -592,7 +592,10 @@ def games():#Function to display and launch games
     elif gchoice=='4':
         exec(open("game_files/sudoku/GUI.py").read())
         with open("tempscore","r") as file:
-            score=int(file.read())
+            if not file.read() == "None":
+                score=int(file.read())
+            else:
+                score=0
         os.remove("tempscore")
         accounts[user+'e'][1]+=int(score)
         fileWrite("bustle_files/UserAcc",accounts)
