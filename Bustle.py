@@ -66,6 +66,7 @@ def register(): #Function to add new user account
         fileWrite("bustle_files/vouchers",vdata)
         print('User account successfully created! You will now be redirected to the login page')
 def voucher():#Function to display and purchase vouchers
+    
     vfile=fileRead("bustle_files/vouchers")
     accounts=fileRead("bustle_files/UserAcc")
     global user
