@@ -566,7 +566,7 @@ def games():#Function to display and launch games
     global user
     accounts=fileRead("bustle_files/UserAcc")
     print("Which game would you like to play?\n")
-    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Points Distribution\n7)Back\n")
+    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Points Distribution\n7)Memory game\n8)Back\n")
     if gchoice =='1':
         exec(open("game_files/snake.py").read())
         with open("tempscore","r") as file:
@@ -617,13 +617,16 @@ def games():#Function to display and launch games
         print(tabulate(data, headers=["Game","Points Awarded"], tablefmt = "fancy_grid"))
         input("\nPress any key to go back")
     elif gchoice=='7':
+        exec(open("game_files/memorygame.py").read())
+         input("\nPress any key to go back")
+    elif gchoice=='8':
         home()
     else:
         print("Invalid Input. Reinitializing page...")
         time.sleep(2)
         clear()
         games()
-    home()
+        home()
 def login(): #Checks and logs in user
     clear()
     n=5
