@@ -6,6 +6,8 @@ from tabulate import tabulate#Used to display a table
 from copy import deepcopy#Used to create new voucher values with different references
 import re #Used to evaluate regex
 import pdb
+import qrcode
+
 clear = lambda: os.system('cls|clear')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
 def fileWrite(filename,data):#Universal function to write to any mentioned file
@@ -1232,11 +1234,11 @@ def checkout(): #Checkout page
     load()
     while True:
         #pdb.set_trace()
-        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.Back\n")
+        pchoice = input("How would you like to make your payment?:\n1.Debit card\n2.Credit card\n3.QR Code\n4.Back\n")
         if pchoice == '1':
             while True:
                 cardchoice=input("Which card would you like to use?\n1)Mastercard\n2)Visa\n3)Back\n")
-                if cardchoice != '3':
+                if cardchoice != '4':
                     clear()
                     dcn = input("Enter Debit Card number:")
                     if CardVerify(dcn,pchoice,cardchoice):
@@ -1312,6 +1314,10 @@ def checkout(): #Checkout page
                     clear()
                     checkout()
         elif pchoice == '3':
+            qr_img = qrcode.make("Welcome")
+            qr_img.save("qr-img.jpg") 
+
+        elif pchoice == '4':
             clear()
             load()
             Booking()
