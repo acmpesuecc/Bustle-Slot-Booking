@@ -593,7 +593,7 @@ def games():#Function to display and launch games
     global user
     accounts=fileRead("bustle_files/UserAcc")
     print("Which game would you like to play?\n")
-    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Points Distribution\n7)Back\n")
+    gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Guess the number\n7)Points Distribution\n8)Back\n")
     if gchoice =='1':
         exec(open("game_files/snake.py").read())
         with open("tempscore","r") as file:
@@ -639,11 +639,14 @@ def games():#Function to display and launch games
         print(f"Your Final Score was: {score}")
         time.sleep(2)
     elif gchoice=='6':
+        exec(open('game_files/Guess_The_Number.py').read())
+        time.sleep(2)
+    elif gchoice=='7':
         clear()
         data =list(zip(["Snake!","Bustle Tetris","Impossible Tic-Tac-Toe!","Sudoku","Trivia!"],["0.5 Bustle Points for every Game point after 10","1 Bustle point for every row cleared","100 Bustle points for winning against computer","10 Bustle points for clearing boaard","1 Bustle point for every correct answer"]))
         print(tabulate(data, headers=["Game","Points Awarded"], tablefmt = "fancy_grid"))
         input("\nPress any key to go back")
-    elif gchoice=='7':
+    elif gchoice=='8':
         home()
     else:
         print("Invalid Input. Reinitializing page...")
