@@ -1,5 +1,5 @@
 def main():
-    import pygame
+    import pygame #python module to make games
     import random
 
     pygame.font.init()
@@ -120,11 +120,11 @@ def main():
         '.....']]
 
     shapes = [S, Z, I, O, J, L, T]
-    shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)]
+    shape_colors = [(0, 255, 0), (255, 0, 0), (0, 255, 255), (255, 255, 0), (255, 165, 0), (0, 0, 255), (128, 0, 128)] #assigns colours to each shape using rgb values
     # index 0 - 6 represent shape
 
 
-    class Piece(object):  # *
+    class Piece(object): 
         def __init__(self, x, y, shape):
             self.x = x
             self.y = y
@@ -133,7 +133,7 @@ def main():
             self.rotation = 0
 
 
-    def create_grid(locked_pos={}):  # *
+    def create_grid(locked_pos={}):  #creates a tetris grid to insert shapes into
         grid = [[(0,0,0) for _ in range(10)] for _ in range(20)]
 
         for i in range(len(grid)):

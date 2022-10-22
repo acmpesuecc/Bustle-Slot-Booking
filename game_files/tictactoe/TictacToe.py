@@ -4,19 +4,19 @@ def main():
     import time
     from players import HumanPlayer, AIPlayer
 
-    pygame.init()
+    pygame.init() #initialises all imported pygame modules
 
     class TicTacToe:
         """TicTacToe class that holds the matrix representation of a board.
         Can add a symbol, select, and draw onto pygame."""
         N = 3   # Board dimension
         def __init__(self) -> None:
-            self.board = [[" "] * TicTacToe.N for i in range(TicTacToe.N)]
+            self.board = [[" "] * TicTacToe.N for i in range(TicTacToe.N)] #creates a board represented as a 3x3 matrix
             self.num_empty = TicTacToe.N * TicTacToe.N  # used to keep is_full constant time
-            self.selected_pos = None
+            self.selected_pos = None #selected square is initialised to None, as nothing is initially selected
             
         def __repr__(self) -> str:
-            return f"{self.board[0]}\n{self.board[1]}\n{self.board[2]}"
+            return f"{self.board[0]}\n{self.board[1]}\n{self.board[2]}" #prints the contents of each row of the 3x3 matrix that represents the board
 
         def is_full(self) -> bool:
             #Returns True if all slots are filled
@@ -34,7 +34,7 @@ def main():
 
             x, y = self.selected_pos    
             if (self.board[y][x] == ' '):
-                self.board[y][x] = symbol
+                self.board[y][x] = symbol #updates the contents of the selected square or element of the matrix if nothing is already assigned to it
                 self.num_empty -= 1
                 return True
             return False

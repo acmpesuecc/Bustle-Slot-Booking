@@ -1,16 +1,26 @@
-from PIL import Image  #For displaying images in the terminal itself
-import pyqrcode #For generating QR code's in python
-from pyqrcode import QRCode #QR code module
-import pickle #To write in dictionary
+#For displaying images in the terminal itself
+from PIL import Image  
+#For generating QR code's in python
+import pyqrcode 
+#QR code module
+from pyqrcode import QRCode 
+#To write in dictionary
+import pickle 
+#Using to clear screen using defined clear() function
 import os
-from random import sample#Using to clear screen using defined clear() function
-import time #Slow down execution using sleep()
-import stdiomask #used to accept password without showing characters
-from tabulate import tabulate#Used to display a table
-from copy import deepcopy#Used to create new voucher values with different references
-import re #Used to evaluate regex
-import pdb
-import pyqrcode
+from random import sample
+#Slow down execution using sleep()
+import time
+#used to accept password without showing characters
+import stdiomask
+#Used to display a table
+from tabulate import tabulate
+#Used to create new voucher values with different references
+from copy import deepcopy
+#Used to evaluate regex
+import re 
+#used to generate qr codes
+import pyqrcode 
 
 clear = lambda: os.system('cls|clear')#Lambda function to clear the screen
 user = ''#Global variable to record currently logged in user
@@ -18,7 +28,7 @@ user = ''#Global variable to record currently logged in user
 
 def fileWrite(filename,data):#Universal function to write to any mentioned file
     with open(filename,'wb') as file:
-        pickle.dump(data,file)
+        pickle.dump(data,file) #uses pickle module to write data into specified file
 
 
 def fileRead(filename):#Universal function to read any mentioned file
@@ -32,27 +42,27 @@ def logout():#Function to display logout screen
     print("Logging out");time.sleep(0.5);clear()
     print("Logging out.");time.sleep(0.5);clear()
     print("Logging out..");time.sleep(0.5);clear()
-    print("Logging out...");time.sleep(0.5);clear()
+    print("Logging out...");time.sleep(0.5);clear() #prints Logging out... with one . added every 0.5s and the screen cleared before adding each
     login()
 
 
 def setpass(usnID,score):#Function to set the password and security question
-    accounts=fileRead("bustle_files/UserAcc")
-    pass1=input("Enter a password:\n")
-    pass1=pass1.strip()
+    accounts = fileRead("bustle_files/UserAcc") #Reads existing user accounts as a dictionary
+    pass1 = input("Enter a password:\n")
+    pass1 = pass1.strip() #strips the password of any spaces on either side
     while True:
-        pass2=input("Confirm password:\n")
-        if pass2==pass1:
+        pass2 = input("Confirm password:\n")
+        if pass2 == pass1:
             while True:
-                sq=input("Enter your Security Question(Minimum of 5 characters ending with a '?'):\n")
+                sq = input("Enter your Security Question(Minimum of 5 characters ending with a '?'):\n")
                 if len(sq) >= 6 and sq.endswith('?'):
-                    sa=input("Enter the answer for your Security Question:\nWARNING: Give an answer you can remember. You will need these in case you have to reset your account password!\n")
-                    accounts.update({usnID:[pass1,score,sq,sa]})
-                    fileWrite('bustle_files/UserAcc',accounts)
+                    sa = input("Enter the answer for your Security Question:\nWARNING: Give an answer you can remember. You will need these in case you have to reset your account password!\n")
+                    accounts.update({usnID:[pass1,score,sq,sa]}) #updates the details for user with given user id
+                    fileWrite('bustle_files/UserAcc',accounts) #writes the updated list of users to the file that stores users and their details
                     return 
                 else:
                     print("Enter a valid security question!(Min 5 characters ending with a '?')")
-                    time.sleep(3)
+                    time.sleep(3) #waits for 3 seconds before clearing screen
                     clear()
                     continue
         else:
@@ -63,55 +73,56 @@ def register(): #Function to add new user account
     while True:
         usn=input("Enter a username(Minimum of 5 characters without special characters):\n")    
         usn=usn.strip()
-        if len(usn) >= 5 and usn.isalnum():
-            usn=usn+'e'
+        if len(usn) >= 5 and usn.isalnum(): #ensures that the username is a minimum of 5 characters and contains only alphabets and numbers
+            usn=usn+'e' #appends e to the username
             break
         else:
             print("Enter a valid username!(Min 5 characters without special characters)")
-            time.sleep(3)
+            time.sleep(3) #waits for 3 seconds before clearing
             clear()
     accounts=fileRead("bustle_files/UserAcc")
-    if usn in accounts:
+    if usn in accounts: #if the given username is found in the list of registered users, a new account is not created and the user is notified that their account already exists
         print("Account already exists!")
     else:
         setpass(usn,1000)
         vdata=fileRead("bustle_files/vouchers")
         vdatacopy=deepcopy(vdata["admine"])
         del vdatacopy[4]
-        vdata.update({usn:vdatacopy})
-        fileWrite("bustle_files/vouchers",vdata)
+        vdata.update({usn:vdatacopy}) #updates voucher data
+        fileWrite("bustle_files/vouchers",vdata) #writes updated voucher data to the file storing voucher details
         print('User account successfully created! You will now be redirected to the login page')
 
 
 def voucher():#Function to display and purchase vouchers
     vfile=fileRead("bustle_files/vouchers")
-    accounts=fileRead("bustle_files/UserAcc")
-    global user
+    accounts=fileRead("bustle_files/UserAcc") #reads the contents of file storing user details and the file storing voucher details
+    global user #global declaration allows us to access the user variable defined in the global scope
     clear()
     print("\t\t\t\tVouchers!")
     print(f"\nUser:{user}\n")
     print(f"Score:{accounts[user+'e'][1]}\n")
     data =list(zip(vfile[user+'e'][0],vfile[user+'e'][1],vfile[user+'e'][2],vfile[user+'e'][3]))
-    print(tabulate(data, headers=["V.Code","Description","Bustle Points","Purchased"], tablefmt = "fancy_grid"))
+    print(tabulate(data, headers=["V.Code","Description","Bustle Points","Purchased"], tablefmt = "fancy_grid")) #prints the voucher details for every user in a formatted manner
     vchoice=input("Which voucher would you like to purchase?\n")
     if vchoice in vfile[user+'e'][0]:
         vquantity=int(input("How many would you like to buy?\n"))
         i=vfile["admine"][0].index(vchoice)
-        if int(accounts[user+'e'][1])>=(int(vfile[user+'e'][2][i])*vquantity):
+        if int(accounts[user+'e'][1])>=(int(vfile[user+'e'][2][i])*vquantity): #makes sure the user has enough currency to purchase the specified type and amount of vouchers
             print(f"{vquantity} Vouchers Added!")
             vfile[user+'e'][3][i]=int(vfile[user+'e'][3][i])+vquantity
-            accounts[user+'e'][1]=int(accounts[user+'e'][1])-(int(vfile[user+'e'][2][i])*vquantity)
+            accounts[user+'e'][1]=int(accounts[user+'e'][1])-(int(vfile[user+'e'][2][i])*vquantity) #updates the vouchers possessed and the currency possessed
             fileWrite("bustle_files/vouchers",vfile)
-            fileWrite("bustle_files/UserAcc",accounts)
+            fileWrite("bustle_files/UserAcc",accounts) #writes the changes to the respective files
             time.sleep(2)
         elif int(accounts[user+'e'][1])<(int(vfile[user+'e'][2][i])*vquantity):
             ynchoice=input("Insufficient Bustle Points!\nWould you like to play some games to get more Bustle Points?(y/n)\n")
+            #if the user has insufficient currency, they are encouraged to earn more by playing games
             if ynchoice=='y':
                 clear()
-                games()
+                games() #loads games if the user wishes to play
             else:
                 clear()
-                home()
+                home() #else it navigates back to the home screen
     elif vchoice=='c':
         clear()
         home()
@@ -123,7 +134,7 @@ def voucher():#Function to display and purchase vouchers
     home()
 
 
-def vouchdisc(price):
+def vouchdisc(price): #function to view and utilise vouchers
     global user
     price=int(price)
     ynchoice=input("Would you like to see the list of available vouchers?(y/n)\n")
@@ -149,7 +160,7 @@ def vouchdisc(price):
                 discexp=vfile["admine"][4][i]
                 if eval(discexp)>=100:
                     price=eval(discexp)
-                    return price 
+                    return price #updates price based on the discount obtained by using a voucher
                 else:
                     print("This voucher cannot be applied on the current transaction!")
                     time.sleep(2)
@@ -162,7 +173,7 @@ def vouchdisc(price):
                 time.sleep(2)
                 clear()
     elif ynchoice=='y' and price<=100:
-        print("Voucher cannot be applied on the current transaction!")
+        print("Voucher cannot be applied on the current transaction!") #does not allow the application of vouchers on products under 100 rupees
         return -1
     elif ynchoice=='n':
         return -1
@@ -183,7 +194,7 @@ def load():#Function to display loading screen
 def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
     if ctype=='1':
         if ccomp=='1':
-            pattern="^5[1-5][0-9]{14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)[0-9]{12}$"
+            pattern="^5[1-5][0-9]{14}|^(222[1-9]|22[3-9]\\d|2[3-6]\\d{2}|27[0-1]\\d|2720)[0-9]{12}$" #all pattern variables are regexs defining the accepted format of credit card number for the specified type of credit card
         elif ccomp=='2':
             pattern="^4[0-9]{12}(?:[0-9]{3})?$"
     elif ctype=='2':
@@ -196,7 +207,7 @@ def CardVerify(cnumber,ctype,ccomp):#Funcion to verfiy Card Number
         load()
         Booking()
     p=re.compile(pattern)
-    if(re.search(p,cnumber)):
+    if(re.search(p,cnumber)): #search is used to search for the presence of a substring. if the presence is detected, a Match object is returned which will evaluate to True if converted to boolean values. Here, if the given card number matches the corresponding regex for the card type it is accepted
         return True
     else:
         return False
@@ -206,20 +217,20 @@ def settings():#Funtion for settings page
     clear()
     global user
     accounts=fileRead("bustle_files/UserAcc")
-    book= fileRead("bustle_files/bookings")
+    book= fileRead("bustle_files/bookings") #opens and reads from file storing booking details
     vouch=fileRead("bustle_files/vouchers")
     setchoice=input("Settings:\n1)Clear Booking History\n2)Change Username\n3)Change Password\n4)Delete Profile\n5)About us\n6)Back\n")
-    if setchoice=='1':
+    if setchoice=='1': #option to clear booking history
         while True:
             ynchoice=input("Do you want to clear your Booking History?(y/n)\n")
             if ynchoice=='y':
                 clear()
                 print("Booking History Cleared!")
-                del book[user]
-                book.update({user:([],[],[],[])})
-                fileWrite("bustle_files/bookings",book)
+                del book[user] #deletes bookings for specified user
+                book.update({user:([],[],[],[])}) #after deleting, adds empty details for user
+                fileWrite("bustle_files/bookings",book) #writes updates to file
                 time.sleep(2)
-                settings()
+                settings() #opens the settings menu
             elif ynchoice=='n':
                 print("Operation cancelled. Redirecting...")
                 time.sleep(2)
@@ -228,24 +239,24 @@ def settings():#Funtion for settings page
                 print("Invalid Input, Reinitializing page...")
                 time.sleep(2)
                 clear()
-    elif setchoice=='2':
+    elif setchoice=='2': #option to change username
         ynchoice=input("Do you want to change your Username?(y/n)\n")
         if ynchoice=='y':
             clear()
             newUSN=input("Enter the new username\n")
-            accounts[newUSN+'e']=accounts[user+'e']
-            book[newUSN]=book[user]
-            vouch[newUSN+'e']=vouch[user+"e"]
+            accounts[newUSN+'e']=accounts[user+'e'] #creates an account with the same details as the one with previous username but key as the new username
+            book[newUSN]=book[user] #updates bookings for user with the same details as the one with previous username but key as the new username
+            vouch[newUSN+'e']=vouch[user+"e"] #updates vouchers for user with the same details as the one with previous username but key as the new username
             del accounts[user+'e']
             del vouch[user+'e']
-            del book[user]
+            del book[user] #deletes records with key os old username
             fileWrite("bustle_files/UserAcc",accounts)
             fileWrite("bustle_files/vouchers",vouch)
-            fileWrite("bustle_files/bookings",book)
+            fileWrite("bustle_files/bookings",book) #writes the changes to the files
             print("Username changed! You will now be taken back to the settings page...")
             user=newUSN
             time.sleep(2)
-            settings()
+            settings() #takes user back to settings page
         elif ynchoice=='n':
             print("Operation cancelled. Redirecting...")
             time.sleep(2)
@@ -254,23 +265,23 @@ def settings():#Funtion for settings page
             print("Invalid Input, Reinitializing page...")
             time.sleep(2)
             clear()
-    elif setchoice=='3':
+    elif setchoice=='3': #option to change password
         ynchoice=input("Do you want to change your Password?(y/n)\n")
         if ynchoice=='y':
             clear()
             while True:
                 newPass=input("Confirm Current Password\n")
-                if newPass==accounts[user+'e'][0]:
+                if newPass==accounts[user+'e'][0]: #only allows password to be changed if the entered current password is correct
                     newPass=input("Enter the new password:\n")
                     if newPass==input("Confirm the password:\n"):
                         accounts[user+'e'][0]=newPass
-                        fileWrite("bustle_files/UserAcc",accounts)
+                        fileWrite("bustle_files/UserAcc",accounts) #updates password and writes to file
                         print("Password changed successfully! You will be redirected to the settings page\n")
                         time.sleep(2)
                         clear()
                         settings()
                     else:
-                        print("The passwords do not match! Try setting the password again.")
+                        print("The passwords do not match! Try setting the password again.") #displayed if the initial new password and the confirmation new password are different
                         time.sleep(2)
                         clear()
                 elif newPass=='c':
@@ -288,20 +299,20 @@ def settings():#Funtion for settings page
             print("Invalid Input. Reinitializing page...")
             time.sleep(2)
             settings()
-    elif setchoice=='4':
+    elif setchoice=='4': #option to delete user profile
         ynchoice=input("Are you sure you want to delete your profile?(y/n)\n")
         if ynchoice=='y':
             del accounts[user+'e']
             del book[user]
-            del vouch[user+'e']
+            del vouch[user+'e'] #deletes all entries related to the user
             fileWrite("bustle_files/UserAcc",accounts)
             fileWrite("bustle_files/bookings",book)
-            fileWrite("bustle_files/vouchers",vouch)
+            fileWrite("bustle_files/vouchers",vouch) #updates all files
             print("User Deleted! Hope to see you again!\n")
             time.sleep(2)
             clear()
-            menu()
-    elif setchoice=='5':
+            menu() #redirects to menu
+    elif setchoice=='5': #option to display about us section
         clear()
         print("Team bustle is a group of persistant, hard working and perfectionist coders.")
         print("Project Bustle, our very first project, is an intuitive slot booking and management software that ensures your time and efforts saved")
@@ -310,7 +321,7 @@ def settings():#Funtion for settings page
         settings()
     elif setchoice=='6':
         clear()
-        home()
+        home() #redirects to home page
     else:
         print("Invalid Input. Reinitializing page...")
         time.sleep(2)
@@ -318,11 +329,11 @@ def settings():#Funtion for settings page
 
 
 def admin():#Function to allow admin to manage the program
-    adminpass=fileRead("bustle_files/UserAcc")
-    adminpass=adminpass["admine"]
+    adminpass = fileRead("bustle_files/UserAcc")
+    adminpass = adminpass["admine"]
     clear()
     mastchoice1=input("What would you like to do?\n1)Add provider\n2)Delete provider\n3)Manage Vouchers\n4)Manage User Accounts\n5)Logout\n")
-    if mastchoice1=='1':
+    if mastchoice1=='1': #option to add
         mastchoice2=input("Choose a category to add to: \n1)Restaurant\n2)Hotel\n3)Spa\n4)Bicycle Repair\n5)Back\n")#Add other services here
         if mastchoice2=='1' or mastchoice2=='2':
             if mastchoice2=='1':
@@ -353,12 +364,12 @@ def admin():#Function to allow admin to manage the program
                     print("Incorrect number of inputs received")
                     time.sleep(3)
                     clear()
-                    admin()
+                    admin() #navigates to admin page
                 if npname in service:
                     print("Entry already exists!")
                     time.sleep(3)
                 else:
-                    service.update({npname:[npseat,npprice]})
+                    service.update({npname:[npseat,npprice]}) #updates service if it doesnt exist
                     break
             fileWrite(f"bustle_files/{tempname+'s'}/{tempname}",service)   
             clear()
@@ -412,7 +423,7 @@ def admin():#Function to allow admin to manage the program
             time.sleep(3)
             clear()
             admin()
-    elif mastchoice1=='2':
+    elif mastchoice1=='2': #option to delete 
         while True:
             mastchoice2=input("Choose a category to delete from:\n1)Restaurant\n2)Hotel\n3)Spa\n4)Bicycle Repair\n5)Back\n")#Add other services here
             if mastchoice2=='1':
@@ -465,7 +476,7 @@ def admin():#Function to allow admin to manage the program
                 print("Provider doesn't exist! Provider deleletion failed")
                 time.sleep(3)
                 clear()
-    elif mastchoice1=='3':
+    elif mastchoice1=='3': #option to manage vouchers
         vfile=fileRead("bustle_files/vouchers")
         vchoice=input("What would you like to do?\n1)Add Voucher\n2)Delete voucher\n")
         if vchoice=='1':
@@ -479,28 +490,28 @@ def admin():#Function to allow admin to manage the program
                     time.sleep(3)
                     clear()
             for user in fileRead("bustle_files/UserAcc"):
-                if user in vfile:
+                if user in vfile: #appends voucher information for the selected user
                     vfile[user][0].append(vcode)#list of all voucher codes
                     vfile[user][1].append(vdesc)#list of all voucher descriptions
                     vfile[user][2].append(vscore)#list of all costs
                     vfile[user][3].append(0)#quantity of vouchers present
-                    vfile.update({user:vfile[user]})
+                    vfile.update({user:vfile[user]}) #updates voucher file with user voucher data
             vfile["admine"][4].append(vcalc)#list of all the mathematical operations for vouchers
-            fileWrite("bustle_files/vouchers",vfile)
+            fileWrite("bustle_files/vouchers",vfile) #writes all updates into the voucher file
             clear()
             print("Voucher Added!")
             time.sleep(3)
-            admin()
+            admin() #navigates to admin after running successfully
         elif vchoice=='2':
             vfile=fileRead("bustle_files/vouchers")
             while True:
                 if len(vfile["admine"][0])!=0:
                     print("Which voucher would you like to delete?")
-                    print(vfile["admine"][0])
+                    print(vfile["admine"][0]) #prints voucher codes
                     vcode=input()
                     if vcode in vfile["admine"][0]:
                         i=vfile["admine"][0].index(vcode)
-                        for user in vfile:
+                        for user in vfile: #deletes all voucher related information for a given voucher code
                             del vfile[user][0][i]
                             del vfile[user][1][i]
                             del vfile[user][2][i]
@@ -534,24 +545,24 @@ def admin():#Function to allow admin to manage the program
         accounts = fileRead("bustle_files/UserAcc")
         if mchoice=='1':
             print("Which account do you wish to manage?")
-            for key in accounts:
+            for key in accounts: #As accounts is stored as a dictionary we must refer to its keys, where keys are user id
                 if key != "admine":
                     print(key)  
             edchoice = input()
-            if edchoice in accounts and edchoice[-1] == 'e':
+            if edchoice in accounts and edchoice[-1] == 'e': #checks if a user exists and is enabled before disabling their account
                 print(f"Do you wish to disable {edchoice}(y/n)?")
                 yncheck = input()
                 if yncheck == 'y':
                     accounts[edchoice[0:-1]+'d'] = accounts[edchoice]
                     del accounts[edchoice]
-            elif edchoice in accounts and edchoice[-1] == 'd':
+            elif edchoice in accounts and edchoice[-1] == 'd':  #checks if a user exists and is disabled before enabling their account
                 print(f"Do you wish to enable {edchoice}?(y/n)")
                 yncheck = input()
                 if yncheck == 'y':
                     accounts[edchoice[0:-1]+'e'] = accounts[edchoice]
                     del accounts[edchoice]
             else:
-                print("Account doesnt exist! Try again!")
+                print("Account doesnt exist! Try again!") #notifies the user if the selected account to disable does not exist
                 time.sleep(3)
                 admin()
             fileWrite("bustle_files/UserAcc",accounts)
@@ -561,12 +572,12 @@ def admin():#Function to allow admin to manage the program
                     print(key)  
             usnchoice=input("Which user would you like to delete\n")
             while True:
-                if usnchoice in accounts:
+                if usnchoice in accounts: #As user id is key and usnchoice is a user id, this expression is valid
                     del accounts[usnchoice]
                     vfile=fileRead("bustle_files/vouchers")
                     del vfile[usnchoice]
                     fileWrite("bustle_files/UserAcc",accounts)
-                    fileWrite("bustle_files/vouchers",vfile)
+                    fileWrite("bustle_files/vouchers",vfile) #deletes user and writes the changes to the files
                     print("User deleted!")
                     time.sleep(2)
                     clear()
@@ -598,9 +609,9 @@ def games():#Function to display and launch games
     print("Which game would you like to play?\n")
     gchoice=input("1)Snake!\n2)Bustle Tetris\n3)Impossible Tic-Tac-Toe!\n4)Sudoku\n5)Trivia!\n6)Guess the number\n7)Points Distribution\n8)Back\n")
     if gchoice =='1':
-        exec(open("game_files/snake.py").read())
+        exec(open("game_files/snake.py").read()) #exec() function is used for dynamically executing Python programs read as strings or object code
         with open("tempscore","r") as file:
-            score=int(file.read())
+            score=int(file.read())  #score for game is stored in the store variable which allows to delete the temporary file used to store the score
         os.remove("tempscore")
         if score>10:
             accounts[user+'e'][1]+=int((score-10)/2)
@@ -627,9 +638,9 @@ def games():#Function to display and launch games
             else:
                 score=0
         os.remove("tempscore")
-        accounts[user+'e'][1]+=int(score)
-        fileWrite("bustle_files/UserAcc",accounts)
-        print(f"Your Final Score was: {score}")
+        accounts[user+'e'][1]+=int(score) #increments the users total score
+        fileWrite("bustle_files/UserAcc",accounts) #writes the score to the users file
+        print(f"Your Final Score was: {score}") #prints final score using format string
         time.sleep(2)
     elif gchoice=='5':
         exec(open("game_files/trivia/BUSTLEQUIZ.py").read())
@@ -668,7 +679,7 @@ def login(): #Checks and logs in user
         if key[-1]=='e':
             print(key[0:-1])
         elif key[-1]=='d':
-            print(key[0:-1],"(disabled)")
+            print(key[0:-1],"(disabled)") #notifies a user if the accoutn they are trying to log into is disabled. disabled accoutns are denoted with a 'd' at the end and enabled accounts are denoted with 'e'
     usnchoice=input("Select an account (Enter 'c' to go back)\n")
     for key in accounts:
         if key.startswith(usnchoice) and key[-1]=='e':
@@ -689,21 +700,21 @@ def login(): #Checks and logs in user
                 accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
                 del accounts[usnchoice]
                 fileWrite('bustle_files/UserAcc',accounts)
-                return  False    
+                return  False    #if login ttempt fails, the user is disabled
     elif usnchoice in accounts and bool==True:
         while n>=0:
-            loginpass=stdiomask.getpass("Enter your password\n")
+            loginpass=stdiomask.getpass("Enter your password\n") #stdiomask gets password input from the stdin and masks each character with *
             if loginpass==accounts[usnchoice][0]:
                 clear()
                 global user 
                 print("Welcome ",usnchoice[0:-1],"!\nLoading");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading.");time.sleep(0.5);clear()
                 print("Welcome ",usnchoice[0:-1],"!\nLoading..");time.sleep(0.5);clear()
-                print("Welcome ",usnchoice[0:-1],"!\nLoading...");time.sleep(0.5);clear()
+                print("Welcome ",usnchoice[0:-1],"!\nLoading...");time.sleep(0.5);clear() #Creates a loading screen
                 user = usnchoice[0:-1]
                 home()
-            elif loginpass=='F':
-                fpans=input(accounts[usnchoice][2])
+            elif loginpass=='F': #Forgot password option
+                fpans=input(accounts[usnchoice][2]) #The answer to the security question needs to be submitted here
                 if fpans== accounts[usnchoice][3]:
                     print("Enter New Password(Make sure to remember this one!)\nNote:You will be required to enter new Security credentials\n")
                     score=accounts[usnchoice][1]
@@ -718,9 +729,9 @@ def login(): #Checks and logs in user
                     accounts[usnchoice[0:-1]+'d']=accounts[usnchoice]
                     del accounts[usnchoice]
                     fileWrite('bustle_files/UserAcc',accounts)
-                    return  False   
+                    return  False   #if all login attempts are exhausted then, the account is disabled
     elif usnchoice in accounts and bool==False:
-        print("This account is disabled. Kindly contact the admin to re-enable your account")
+        print("This account is disabled. Kindly contact the admin to re-enable your account") #if there is an attempt to access a disabled account, it will print this
         return False
     elif usnchoice=='c':
         clear()
@@ -738,26 +749,26 @@ def home():#Home page
     if homechoice=='1':
         clear()
         load()
-        Booking()
+        Booking() #opens bookings page
     elif homechoice=='2':
         clear()
         load()
         BookingHist(None,None,None,None)
     elif homechoice=='3':
         clear()
-        voucher()
+        voucher() #opens voucher page
     elif homechoice=='4':
         clear()
-        games()
+        games() #opens games page
     elif homechoice=='5':
         clear()
-        settings()
+        settings() #opens settings page
     elif homechoice=='6':
-        logout()
+        logout() #logs out a user
     else:
         print("Invalid Input")
         time.sleep(2)
-        home()
+        home() #if the input is invalid, the user will be returned to the home screen
 
 
 def menu():#Starting page of the program
@@ -777,14 +788,14 @@ def menu():#Starting page of the program
             clear()
         elif loginno=='disp': #Dev Command
             accounts=fileRead('bustle_files/UserAcc')
-            print(accounts)
+            print(accounts) #displays all the accounts that are registered
         elif loginno=='fclr': #Dev Command
             os.remove("bustle_files/UserAcc")
-            fileWrite("bustle_files/UserAcc",{'admine':'mpass'})
+            fileWrite("bustle_files/UserAcc",{'admine':'mpass'}) #clears all accounts apart from the admin account
         elif loginno=='m':#TEMPORARY
             admin()
         elif loginno=='vdisp':
-            print(fileRead("bustle_files/vouchers"))
+            print(fileRead("bustle_files/vouchers")) #prints the contents of the vouchers file
         else:
             print("Invalid Input")
             time.sleep(3)
@@ -820,18 +831,18 @@ def Restaurant(): #Choosing Restaurants
         Booking()
     name = "Restaurant"
     clear()
-    slots = fileRead("bustle_files/restaurants/restaurant")
+    slots = fileRead("bustle_files/restaurants/restaurant") #opens file with list of restaurants
     print("Which restaurant would you like to book a table in?")
-    for key in slots:
-        print(key)
+    for key in slots: 
+        print(key) #prints list of all the restaurants
     print("(Press 'c' to go back)")
     rchoice = input()
-    if rchoice in slots:
-        try:
+    if rchoice in slots: #checks if the chosen restaurant is in the list of existing ones.
+        try: #try except block to handle any errors that may arise
             fileRead(f"bustle_files/restaurants/{rchoice}")
         except:
             fileWrite(f"bustle_files/restaurants/{rchoice}", {"10:00-12:00":[slots[rchoice][0],slots[rchoice][1]],"12:00-2:00":[slots[rchoice][0],slots[rchoice][1]],"2:00-4:00":[slots[rchoice][0],slots[rchoice][1]],"4:00-6:00":[slots[rchoice][0],slots[rchoice][1]],"6:00-8:00":[slots[rchoice][0],slots[rchoice][1]],"8:00-10:00":[slots[rchoice][0],slots[rchoice][1]]})
-        booking = fileRead(f"bustle_files/restaurants/{rchoice}")
+        booking = fileRead(f"bustle_files/restaurants/{rchoice}") #list of restaurants that a user has a booking in
         print("\nNo. of seats per table: 4")
         print(f"Price per table: {slots[rchoice][1]}")
         while True:

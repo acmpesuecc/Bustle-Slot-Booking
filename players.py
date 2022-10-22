@@ -1,14 +1,15 @@
 """
 TicTacToe Player Module
-Has a Player parent class, HumanPlayer, and AIPlayer"""
+Has a Player parent class, HumanPlayer, and AIPlayer
+"""
 
 import math
-import pygame
+import pygame #python module used to build games
 import time
 
 class Player:
     """Player parent class"""
-    def __init__(self) -> None:
+    def __init__(self) -> None: # -> is return annotation. Here, -> None indicates that the function returns nothing,i.e, None (but doesn't force it to return nothing)
         pass
 
     def set_symbol(self, symbol:str) -> None:
@@ -19,9 +20,10 @@ class Player:
     def play(self, board) -> bool:
         pass
 
-class HumanPlayer(Player):
+class HumanPlayer(Player): #HumanPlayer taking Player as an argument is an example of inheritance.
+    #Here, HumanPlayer will inherit all the properties and methods of Player which is its parent class
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__() #super() gives access to the __init__ defined in parent class
 
     def set_symbol(self, symbol) -> None:
         return super().set_symbol(symbol)
@@ -29,7 +31,7 @@ class HumanPlayer(Player):
     def select(self,board) -> None:
         """Given a TicTacToe board, gives the current mouse position
         to select a slot."""
-        pos = pygame.mouse.get_pos()
+        pos = pygame.mouse.get_pos() #Allows us to find the coordinates of the mouse cursor everytime the cursor is moved
         board.select(pos)
 
     def play(self, board) -> bool:
@@ -38,19 +40,19 @@ class HumanPlayer(Player):
         """
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    pygame.quit() #quits the game if the pygame quit event is triggered
                     quit()
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN: #if a click is detected, the square that the mouse curosr was on is selected
                     self.select(board)
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        if board.add_at_selected(self.symbol):
+                        if board.add_at_selected(self.symbol): #adds the selected symbol at the selected square
                             return True
         return False
 
-class AIPlayer(Player):
+class AIPlayer(Player): #creates an AI Player that shares the same methods and properties as the Player class
     def __init__(self) -> None:
         super().__init__()
 
@@ -61,7 +63,7 @@ class AIPlayer(Player):
         """Given a board, AI uses Minimax algorithm to play optimal move.
         Returns True if player confirms play, else False."""
         copy = board.copy()
-        time.sleep(.5)  # Pause so game not updated instantly
+        time.sleep(.5)  # 0.5s pause so that the game is not updated instantly
         i = self.minimax(copy, -math.inf, math.inf, True, 0)
         board.add_at_i(self.symbol,i)
         return True

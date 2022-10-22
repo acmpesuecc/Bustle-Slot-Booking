@@ -1,16 +1,17 @@
 gamscore=0
 def main():
-    import pygame
-    import os
-    clear = lambda: os.system('cls')
+    import pygame #pygame is the python module used to create games
+    import os #os is the python module used to interact with the operating system
+    clear = lambda: os.system('cls') #lambda function to clear screen
     clear()
     import random
-    from enum import Enum
-    from collections import namedtuple
+    from enum import Enum #used to create enumerations
+    from collections import namedtuple #the collections module is used to create containers
 
-    pygame.init()
-    font = pygame.font.SysFont('arial', 25)
+    pygame.init() #initialises all imported pygame modules
+    font = pygame.font.SysFont('arial', 25) #sets the font for the pygame window
 
+#constants to be used throughout the file are defined here. constants are defined by using capital letters and their values cannot be altered in the file
     class Direction(Enum):
         RIGHT = 1
         LEFT = 2
@@ -35,27 +36,28 @@ def main():
             self.w = w
             self.h = h
             # init display
-            self.display = pygame.display.set_mode((self.w, self.h))
-            pygame.display.set_caption('Snake')
+            self.display = pygame.display.set_mode((self.w, self.h)) #creates a pygame surface class instance
+            pygame.display.set_caption('Snake') #sets the title of the window
             self.clock = pygame.time.Clock()
             
             # init game state
-            self.direction = Direction.RIGHT
+            self.direction = Direction.RIGHT #defines the initial direction of the snake
             
             self.head = Point(self.w/2, self.h/2)
             self.snake = [self.head, 
                         Point(self.head.x-BLOCK_SIZE, self.head.y),
-                        Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
+                        Point(self.head.x-(2*BLOCK_SIZE), self.head.y)] #defines the initial position of the snake
             
             self.score = 0
             self.food = None
-            self._place_food()
+            self._place_food() #spawns food at random spots on the screen
             
         def _place_food(self):
+            #defines coordinates of the food
             x = random.randint(0, (self.w-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE 
             y = random.randint(0, (self.h-BLOCK_SIZE )//BLOCK_SIZE )*BLOCK_SIZE
             self.food = Point(x, y)
-            if self.food in self.snake:
+            if self.food in self.snake: #if the snake coordinates encompass the good coordinates, the food is considered eaten and food is spawned again
                 self._place_food()
             
         def play_step(self):
@@ -72,7 +74,7 @@ def main():
                     elif event.key == pygame.K_UP:
                         self.direction = Direction.UP
                     elif event.key == pygame.K_DOWN:
-                        self.direction = Direction.DOWN
+                        self.direction = Direction.DOWN #changes snake direction based on arrow key inputs from the user
             
             # 2. move
             self._move(self.direction) # update the head
@@ -80,24 +82,24 @@ def main():
             
             # 3. check if game over
             game_over = False
-            if self._is_collision():
+            if self._is_collision(): #if the snake collides with the walls, the game is ended and score is returned
                 game_over = True
                 return game_over, self.score
                 
             # 4. place new food or just move
             if self.head == self.food:
                 self.score += 1
-                self._place_food()
+                self._place_food() #appends score and spawns food if the snake eats food
             else:
                 self.snake.pop()
             
             # 5. update ui and clock
             self._update_ui()
-            self.clock.tick(SPEED)
+            self.clock.tick(SPEED) #updates the speed of the game
             # 6. return game over and score
             return game_over, self.score
         
-        def _is_collision(self):
+        def _is_collision(self): #function to handle collisions with walls
             # hits boundary
             if self.head.x > self.w - BLOCK_SIZE or self.head.x < 0 or self.head.y > self.h - BLOCK_SIZE or self.head.y < 0:
                 return True
@@ -116,13 +118,14 @@ def main():
                 
             pygame.draw.rect(self.display, RED, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
             
-            text = font.render("Score: " + str(self.score), True, WHITE)
+            text = font.render("Score: " + str(self.score), True, WHITE) #renders the score on the screen
             self.display.blit(text, [0, 0])
             pygame.display.flip()
             
         def _move(self, direction):
             x = self.head.x
             y = self.head.y
+            #updates the position of head
             if direction == Direction.RIGHT:
                 x += BLOCK_SIZE
             elif direction == Direction.LEFT:
@@ -134,7 +137,7 @@ def main():
                 
             self.head = Point(x, y)
 
-    if __name__ == '__main__':
+    if __name__ == '__main__': #__main__ is the top-level
             game = SnakeGame()
         
             # game loop
@@ -144,9 +147,9 @@ def main():
                 if game_over == True:
                     break
             
-            print('Final Score is:', score)
+            print('Final Score is:', score) #prints final score when the game ends
             pygame.quit()
             return score           
 gamscore=str(main())
 with open("tempscore","w") as file:
-    file.write(str(gamscore))
+    file.write(str(gamscore)) #adds the game's score to the tempscore file
