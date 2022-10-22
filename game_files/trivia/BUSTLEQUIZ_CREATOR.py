@@ -7,8 +7,9 @@ a.minsize(1000, 360)
 a.maxsize(1000, 360) #defines the minimum and maximum sizes that the main window can be resized to
 
 conn = sqlite3.connect("game_files/trivia/test.db") #creates a connection object to the database file test. We use this as SQLite stores databases in .db files instead of normal structred databases like SQL
-conn.execute('DROP TABLE IF EXISTS Quiz;') #executes the SQL query to drop any existing table
-conn.execute('''CREATE TABLE Quiz
+cur = conn.cursor
+cur.execute('DROP TABLE IF EXISTS Quiz;') #executes the SQL query to drop any existing table
+cur.execute('''CREATE TABLE Quiz
              (Question           TEXT    NOT NULL,
              Option1            TEXT    NOT NULL,
              Option2            TEXT    NOT NULL,
